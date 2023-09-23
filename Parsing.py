@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
+# In[1]:
 
 
 import requests
 from bs4 import BeautifulSoup
-import csv
-from selenium import webdriver
+import re
 
 
 # In[2]:
@@ -18,36 +17,7 @@ html = requests.get(url).text
 soup = BeautifulSoup(html, 'lxml')
 
 
-# In[7]:
-
-
-url1 = 'https://www.autoscout24.com/offers/mclaren-650s-coupe-lift-vollleder-parksystem-lm-stealth-finish-us-gasoline-black-e5d6e579-c0ca-4fec-8dcd-7f49e0625840?sort=standard&desc=0&lastSeenGuidPresent=true&cldtidx=2&position=2&search_id=mu46oz87ke&source_otp=t50&source=listpage_search-results&order_bucket=6'
-html1 = requests.get(url1).text
-soup1 = BeautifulSoup(html1, 'lxml')
-
-
-# In[8]:
-
-
-cars1 = soup1.find('a', attrs={'class':'scr-link StockList_link___HKPA'})
-cars1
-
-
-# In[ ]:
-
-
-urls = []
-for link in soup.find_all('a'):
-    print(link.get('href'))
-
-
-# In[ ]:
-
-
-extract_href_with_selenium(url)
-
-
-# In[ ]:
+# In[3]:
 
 
 #get the number of total pages on the web site
@@ -58,7 +28,7 @@ def total_pages(soup):
     return total_pages
 
 
-# In[ ]:
+# In[4]:
 
 
 #get a dictionary of all URLs that lead to a specific page
@@ -70,88 +40,51 @@ for i in range(1, total_pages(soup) + 1):
     all_pages[i]=url
 
 
-# In[ ]:
+# In[5]:
 
 
-page_1 = BeautifulSoup(requests.get(all_pages[1]).text, 'lxml')
-more_cars = page_1.find('a', attrs={'class':'scr-link SellerInfo_link__Dmh0H'}).get('href')
-more_cars
-
-
-# In[ ]:
-
-
-more_cars[0]
-
-
-# In[ ]:
-
-
-<a class="scr-link SellerInfo_link__Dmh0H" href="/lst?atype=C&amp;cid=15535338" rel="noopener">+ Show more vehicles</a>
-
-
-# In[ ]:
-
-
-href="/lst?atype=C&cid=15535338"
-
-
-# In[ ]:
-
-
-href="/lst?atype=C&cid=5791"
-
-
-# In[ ]:
-
-
-#here we get html codes as a soup element about all pages
+#here we create a list of html codes as soup elements about all pages
 soups_list = []
 for k in all_pages:
     soups_list.append(BeautifulSoup(requests.get(all_pages[k]).text, 'lxml'))
 
 
-# In[ ]:
+# In[6]:
 
 
-#here we get description of mark and model about all cars from all the pages
-for elem in soups_list:
-    models = elem.find_all('div', attrs={'class':'ListItem_header__uPzec ListItem_header_new_design__hPPNh'})
-    for model in models:
-        model = model.find('h2')
-        print(model.text)
+cars = []
+characteristics = []
+prices = []
+for element in soups_list:
+    car = element.find_all('a',attrs={'class':'ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l'})
+    characters = element.find_all('div', attrs={'class':'VehicleDetailTable_container__mUUbY'})
+    price = element.find_all('p', attrs={'class':'Price_price__WZayw PriceAndSeals_current_price__XscDn'})
+    for c, char, pr in zip (car, characters, price):
+        cars.append(c.get_text())
+        characteristics.append(char.get_text())
+        prices.append(pr.get_text())
 
 
-# In[ ]:
+# In[18]:
 
 
-#here we get info about all models and marks from one page
-models = soup.find_all('div', attrs={'class':'ListItem_header__uPzec ListItem_header_new_design__hPPNh'})
-n = 1
-for model in models:
-    model = model.find('h2')
-    print(n, model.text)
-    n+=1 
+for i in range(len(cars)):
+    cars[i] = cars[i].split('\xa0')[0]
 
 
-# In[ ]:
+# In[33]:
 
 
-for elem in soups_list:
-    elem.find_all('div', attrs={'class':'ListItem_header__uPzec ListItem_header_new_design__hPPNh'})
-    
+for i in range(len(characteristics)):
+    patterns = [r'\d{1,3}(?:,\d{3})*\s?km', r'Automatic|Manual', r'\d{1,2}/\d{4}', r'Diesel|Gasoline|Petrol|Electric', r'\d{1,4}\s?hp']
+    characteristics[i] = [re.search(pattern, characteristics[i]).group(0).replace(' km', '').strip() if re.search(pattern, characteristics[i]) else None for pattern in patterns]
 
 
-# In[ ]:
+# In[39]:
 
 
-#here we get prices of all cars on one page
-prices = soup.find_all('div', attrs={'class':'ListItem_listing__VjI4F'})
-n = 1
-for price in prices:
-    price = price.find('p')
-    print(n, price.text)
-    n+=1 
+for i in range(len(prices)):
+    prices[i] = int(re.sub(r'\D', '', prices[i]))
 
 
 # In[ ]:
