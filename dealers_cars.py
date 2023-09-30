@@ -63,7 +63,7 @@ def sel_pars(url):
         # Switch to the newly opened tab
         chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
         # Add a delay to ensure the new tab is fully loaded
-        time.sleep(2)
+        time.sleep(5)
         # Append the new tab's URL to the 'dealer_cars' list
         dealer_cars.append(chrome_driver.current_url)
         # Close the newly opened tab
