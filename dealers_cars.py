@@ -1,14 +1,14 @@
-def sel_pars():
-    from selenium import webdriver
-    from selenium.webdriver.chrome.options import Options
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.webdriver.common.keys import Keys
-    from selenium.webdriver.common.action_chains import ActionChains
-    import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+import time
 
-    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&page=1&search_id=7ka6orz363&sort=standard&source=listpage_pagination&ustate=N%2CU'
+def sel_pars(url):
+
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -58,17 +58,18 @@ def sel_pars():
     for button in buttons:
         # Open the link in a new tab
         ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
-        time.sleep(3)
-        # Switch to the new tab
+        # Wait for the new tab to appear
+        WebDriverWait(chrome_driver, 10).until(lambda driver: len(chrome_driver.window_handles) > 1)
+        # Switch to the newly opened tab
         chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
+        # Add a delay to ensure the new tab is fully loaded
+        time.sleep(2)
         # Append the new tab's URL to the 'dealer_cars' list
         dealer_cars.append(chrome_driver.current_url)
-
+        # Close the newly opened tab
         chrome_driver.close()
-        # Switch back to the original tab (the last tab is now closed)
-        chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
-
-
+        # Switch back to the original tab
+        chrome_driver.switch_to.window(chrome_driver.window_handles[0])
 
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
@@ -77,5 +78,6 @@ def sel_pars():
 
 
 if __name__ == "__main__":
-    dealer_cars = sel_pars()
+    dealer_cars = sel_pars(
+        'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU')
     print(dealer_cars)
