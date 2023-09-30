@@ -58,7 +58,7 @@ def sel_pars():
     for button in buttons:
         # Open the link in a new tab
         ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
-        time.sleep(5)
+        time.sleep(3)
         # Switch to the new tab
         chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
         # Append the new tab's URL to the 'dealer_cars' list
@@ -73,8 +73,9 @@ def sel_pars():
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
 
-    return print(dealer_cars)
+    return dealer_cars
 
 
 if __name__ == "__main__":
     dealer_cars = sel_pars()
+    print(dealer_cars)
