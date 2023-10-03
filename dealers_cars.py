@@ -76,8 +76,15 @@ def sel_pars(url):
 
     return dealer_cars
 
+def main():
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
+    print(sel_pars(url))
+
+
 
 if __name__ == "__main__":
-    dealer_cars = sel_pars(
-        'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU')
-    print(dealer_cars)
+     #dealer_cars = sel_pars(
+        #'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU')
+    #print(dealer_cars)
+    main()
+
