@@ -3,12 +3,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
-import time
 
-
-def sel_pars(url):
+def all_marks(url):
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -16,7 +12,7 @@ def sel_pars(url):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    extra_arguments('--headless')  # Run Chrome without opening the browser')
+    #extra_arguments('--headless')  # Run Chrome without opening the browser')
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS
@@ -51,34 +47,23 @@ def sel_pars(url):
 
     cookies_accept()
 
-    dealer_cars = []
+    # Wait for the marks button to be clickable
+    marks_button = WebDriverWait(chrome_driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'input-wrapper')))
+    marks_button.click()
 
-    buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
+    wait = WebDriverWait(chrome_driver, 10)
+    marks_menu = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'suggestion-item')))
 
-    for button in buttons:
-        # Open the link in a new tab
-        ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
-        # Wait for the new tab to appear
-        WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
-        # Switch to the newly opened tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
-        # Add a delay to ensure the new tab is fully loaded
-        time.sleep(5)
-        # Append the new tab's URL to the 'dealer_cars' list
-        dealer_cars.append(chrome_driver.current_url)
-        # Close the newly opened tab
-        chrome_driver.close()
-        # Switch back to the original tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+    marks_list = []
 
-    # Close the WebDriver to properly clean up resources
+    for mark in marks_menu:
+        marks_list.append(mark.text)
+
     chrome_driver.quit()
 
-    return dealer_cars
+    return marks_list
 
 
 if __name__ == "__main__":
-    dealer_cars = sel_pars()
-
-    # 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU')
-
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
+    all_marks(url)
