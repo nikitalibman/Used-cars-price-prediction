@@ -33,7 +33,7 @@ def sel_pars(url):
     def cookies_accept():
         try:
             # Wait for the consent popup to appear
-            consent_popup = WebDriverWait(chrome_driver, 1).until(
+            consent_popup = WebDriverWait(chrome_driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
             )
             # Check if the "Accept All" button is present
@@ -43,7 +43,7 @@ def sel_pars(url):
                 accept_all_button.click()
 
                 # Wait for the consent popup to disappear (short timeout)
-                WebDriverWait(chrome_driver, 1).until_not(
+                WebDriverWait(chrome_driver, 10).until_not(
                     EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
                 )
         except:

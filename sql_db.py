@@ -15,7 +15,7 @@ def connect (df, param):
     # Connection string
     connection_string = f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
     engine = create_engine(connection_string)
-    df.to_sql('cars', engine, if_exists=param, schema='autoscout')
+    df.to_sql('cars', engine, if_exists=param, index=False, schema='autoscout')
 
 if __name__ == '__main__':
     pass
