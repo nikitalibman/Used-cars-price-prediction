@@ -5,7 +5,7 @@ from random import choice, uniform
 from time import sleep
 
 
-def get_html(url, useragent=None, proxy=None):
+def get_html(url, useragent, proxy):
     r = requests.get(url, headers=useragent, proxies=proxy)
     return r.text
 
@@ -26,7 +26,7 @@ def main():
     proxies = open('proxies.txt').read().split('\n')
 
     for i in range(10):
-        sleep(uniform(3, 6))
+        #sleep(uniform(3, 6))
         proxy = {'http': 'http://' + choice(proxies)}
         useragent = {'User-Agent': choice(useragents)}
         html = get_html(url, useragent, proxy)
