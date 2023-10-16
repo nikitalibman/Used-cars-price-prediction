@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from random import choice, uniform
-from time import sleep
+from random import choice
 
 
 def get_html(url, useragent, proxy):
@@ -16,7 +15,7 @@ def get_ip(html):
     pattern = r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b'
     ip = re.search(pattern, ip).group()
     user_agent = soup.find('div', attrs={'class': 'headers'}).find_next_sibling().text
-    print(ip)
+    print('IP:', ip)
     print(user_agent)
     print('---------------')
 
@@ -26,10 +25,14 @@ def main():
     proxies = open('proxies.txt').read().split('\n')
 
     for i in range(10):
-        #sleep(uniform(3, 6))
-        proxy = {'http': 'http://' + choice(proxies)}
+        # sleep(uniform(3, 6))
+        proxy = {'http': 'http://' + choice(proxies),
+                 "https": 'http://' + choice(proxies)}
         useragent = {'User-Agent': choice(useragents)}
-        html = get_html(url, useragent, proxy)
+        try:
+            html = get_html(url, useragent, proxy)
+        except:
+            continue
         get_ip(html)
 
 
