@@ -1,3 +1,10 @@
+"""
+This module goes around each main page and clicks on hyper links under every car description. This link takes us
+to the dealer of this car and all other cars that belong to him. The structure is the same as with the main pages.
+The main goal is to obtain URL links to all these dealers.
+"""
+
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By

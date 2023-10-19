@@ -1,3 +1,10 @@
+"""
+This module randomly selects a pair of IP and User Agent values from the corresponding txt files. These files have been
+created in advance by other modules (proxies.py and user_agents.py). This module iterates through entire txt files and
+checks the connection with randomly selected pairs IP+User Agent. In order to check that the connection is established
+correctly, and we managed to change our initial IP and User Agent a website https://www.myip.com/ is used.
+"""
+
 import requests
 from bs4 import BeautifulSoup
 import re

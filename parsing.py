@@ -1,4 +1,9 @@
-# The output of this module are several lists with cars' information: cars names, characteristics, locations, prices.
+"""
+This module extracts html codes from a list of pages that is provided as an argument in the main cars_info
+function. Then it scraps info about every car from every page.
+The output of this module are several lists with cars' information: cars names, characteristics, locations, prices.
+"""
+
 
 import requests
 from bs4 import BeautifulSoup
