@@ -28,10 +28,13 @@ def get_ip(html):
 
 
 def main():
-    useragents = open('user_agents.txt').read().split('\n')
-    proxies = open('proxies.txt').read().split('\n')
+    try:
+        useragents = open('user_agents.txt').read().split('\n')[:-1]
+        proxies = open('proxies.txt').read().split('\n')[:-1]
+    except:
+        print('Empty line')
 
-    for i in range(10):
+    for i in range(11):
         # sleep(uniform(3, 6))
         proxy = {'http': 'http://' + choice(proxies),
                  "https": 'http://' + choice(proxies)}

@@ -27,4 +27,4 @@ def main(url):
 
 if __name__ == '__main__':
     url = 'https://techblog.willshouse.com/2012/01/03/most-common-user-agents/'
-    print(main(url))
+    main(url)

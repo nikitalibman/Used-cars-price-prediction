@@ -1,4 +1,6 @@
-#This module collects all URLs of the main pages from the website autoscout24.com
+"""
+This module collects all URLs of the main pages from the website autoscout24.com.
+"""
 
 import requests
 from bs4 import BeautifulSoup

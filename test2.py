@@ -10,12 +10,12 @@ def main(url, proxy, useragent):
     chrome_options = Options()
     extra_arguments(chrome_options, f'--proxy-server={proxy}')
     extra_arguments(chrome_options, f'--user-agent={useragent}')
-    extra_arguments(chrome_options, '--incognito')  # Run Chrome in incognito mode
+    #extra_arguments(chrome_options, '--incognito')  # Run Chrome in incognito mode
     #extra_arguments(chrome_options, '--headless')  # Run Chrome without opening the browser')
-    extra_arguments(chrome_options, '--blink-settings=imagesEnabled=false')  # Disable images
-    extra_arguments(chrome_options, '--disable-gpu')  # Disable CSS
-    extra_arguments(chrome_options, '--disable-software-rasterizer')  # Disable CSS
-    extra_arguments(chrome_options, '--disable-dev-shm-usage')  # Disable CSS
+    #extra_arguments(chrome_options, '--blink-settings=imagesEnabled=false')  # Disable images
+    #extra_arguments(chrome_options, '--disable-gpu')  # Disable CSS
+    #extra_arguments(chrome_options, '--disable-software-rasterizer')  # Disable CSS
+    #extra_arguments(chrome_options, '--disable-dev-shm-usage')  # Disable CSS
 
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
