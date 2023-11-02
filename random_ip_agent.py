@@ -9,14 +9,14 @@ from random import choice
 
 def rand():
     useragents = open('user_agents.txt').read().split('\n')[:-1]
-    proxies = open('proxies.txt').read().split('\n')[:-1]
-    #random_proxy = choice(proxies)
-    #proxy = {
-    #    'http': 'http://' + random_proxy,
-    #    'https': 'https://' + random_proxy
-    #}
-    proxy = {'http': 'http://' + choice(proxies),
-             "https": 'http://' + choice(proxies)}
+    proxies = open('http_proxies.txt').read().split('\n')[:-1]
+    random_proxy = choice(proxies)
+    proxy = {
+       'http': 'http://' + random_proxy,
+        'https': 'https://' + random_proxy
+    }
+    #proxy = {'http': 'http://' + choice(proxies),
+    #         "https": 'https://' + choice(proxies)}
     useragent = {'User-Agent': choice(useragents)}
     return proxy, useragent
 

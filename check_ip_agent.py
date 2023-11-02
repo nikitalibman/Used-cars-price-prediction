@@ -28,22 +28,21 @@ def get_ip(html):
 
 
 def main():
-    try:
-        useragents = open('user_agents.txt').read().split('\n')[:-1]
-        proxies = open('proxies.txt').read().split('\n')[:-1]
-    except:
-        print('Empty line')
+    useragents = open('user_agents.txt').read().split('\n')[:-1]
+    proxies = open('http_proxies.txt').read().split('\n')[:-1]
 
-    for i in range(11):
-        # sleep(uniform(3, 6))
+    for i in range(len(proxies)):
+        #random_proxy = choice(proxies)
         proxy = {'http': 'http://' + choice(proxies),
                  "https": 'http://' + choice(proxies)}
         useragent = {'User-Agent': choice(useragents)}
         try:
             html = get_html(url, useragent, proxy)
+            get_ip(html)
         except:
-            continue
-        get_ip(html)
+            print('Bad Proxy')
+
+
 
 
 if __name__ == '__main__':

@@ -29,7 +29,8 @@ def main(url, proxy, useragent):
 
 
 if __name__ == "__main__":
-    url = 'https://www.myip.com/'
+    #url = 'https://www.myip.com/'
+    url = 'http://www.whatismyproxy.com/'
     #url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     proxy, useragent = random_ip_agent.rand()
     print(proxy)

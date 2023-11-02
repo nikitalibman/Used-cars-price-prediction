@@ -9,6 +9,7 @@ try:
     if response.status_code == 200:
         print("Proxy is working.")
         print(proxy)
+
     else:
         print("Proxy is not working.")
 except Exception as e:

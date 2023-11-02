@@ -27,7 +27,7 @@ for item in ip_list:
             has_alpha = True
             break
 
-    if not has_alpha:
+    if not has_alpha and item.strip():
         filtered_list.append(item)
 
 joined = []
