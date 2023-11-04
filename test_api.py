@@ -1,12 +1,14 @@
 import requests
-import random_ip_agent
+from random import choice
 
 
 url = 'https://api.myip.com/'
-#proxy, useragent = random_ip_agent.rand()
 
-proxy = {'http': 'http://43.157.8.79:8888',
-         "https": 'https://43.157.8.79:8888'}
+proxies = open('proxyscrape_premium_http_proxies.txt').read().split('\n')[:-1]
 
-response = requests.get(url, proxies=proxy).text
-print(response)
+for i in range(10):
+    random_proxy = choice(proxies)
+    proxy = {'http': 'http://' + random_proxy,
+             "https": 'http://' + random_proxy}
+    response = requests.get(url, proxies=proxy).text
+    print(response)

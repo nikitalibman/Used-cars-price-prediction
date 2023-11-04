@@ -29,18 +29,19 @@ def get_ip(html):
 
 def main():
     useragents = open('user_agents.txt').read().split('\n')[:-1]
-    proxies = open('http_proxies.txt').read().split('\n')[:-1]
+    proxies = open('proxy-checker.txt').read().split('\n')[:-1]
 
-    for i in range(len(proxies)):
-        #random_proxy = choice(proxies)
-        proxy = {'http': 'http://' + choice(proxies),
-                 "https": 'http://' + choice(proxies)}
+    #for i in range(len(proxies)):
+    for i in range(10):
+        random_proxy = choice(proxies)
+        proxy = {'http': 'http://' + random_proxy}
+                 #"https": 'http://' + random_proxy}
         useragent = {'User-Agent': choice(useragents)}
-        try:
-            html = get_html(url, useragent, proxy)
-            get_ip(html)
-        except:
-            print('Bad Proxy')
+        #try:
+        html = get_html(url, useragent, proxy)
+        get_ip(html)
+        #except:
+        #    print('Bad Proxy')
 
 
 
