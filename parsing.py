@@ -31,7 +31,10 @@ def cars_info(all_pages):
     # prices etc)
     def parcing(tag, attr, df):
         for element in soups_list:
-            info = element.find_all(tag, attrs={'class': attr})
+            try:
+                info = element.find_all(tag, attrs={'class': attr})
+            except:
+                continue
             for i in info:
                 df.append(i.get_text())
         return df

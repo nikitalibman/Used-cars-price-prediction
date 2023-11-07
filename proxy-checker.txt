@@ -1,3 +1,0 @@
-71.86.129.131   8080 United States HTTP Anonymous  482 ms  Active  
-103.123.25.65   80 Indonesia HTTP Anonymous  844 ms  Active  
-41.77.188.131   80 Guinea HTTP Anonymous  1038 ms  Active  
