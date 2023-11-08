@@ -40,7 +40,7 @@ def main():
         useragent = {'User-Agent': choice(useragents)}
         try:
             html = get_html(url, useragent, proxy,
-                            timeout=1)  # Keep proxies with the connection time less than 1 second
+                            timeout=2)  # Keep proxies with the connection time less than 1 second
             get_ip(html)
             good_proxies.append(i)
             g += 1
