@@ -1,11 +1,3 @@
-"""
-This module goes around each main page and clicks on hyperlinks under every car description. This link takes us
-to the dealer of this car and all other cars that belong to him. The structure is the same as with the main pages.
-The main goal is to obtain URL links to all these dealers. The result of this script is a list of all links to
-car dealers.
-"""
-
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -13,10 +5,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
+import main_pages
+import parsing
+import dataframe
+import sql_db
+import marks
 import time
 
 
-def sel_pars(url):
+def parser(url, marks_menu):
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -59,9 +56,12 @@ def sel_pars(url):
 
     cookies_accept()
 
-    dealer_cars = []
+    # dealer_cars = []
 
+    # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
+
+    #i = 0
 
     for button in buttons:
         # Open the link in a new tab
@@ -72,8 +72,22 @@ def sel_pars(url):
         chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
         # Add a delay to ensure the new tab is fully loaded
         time.sleep(5)
-        # Append the new tab's URL to the 'dealer_cars' list
-        dealer_cars.append(chrome_driver.current_url)
+
+        # Here we start scraping info about cars from the current car dealer
+
+        # Get a URL of the current car dealer
+        href = chrome_driver.current_url
+        # Collect all pages of the current car dealer
+        dealer_pages = main_pages.pages_urls(href)
+        # Scrap data about each car from this dealer
+        cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
+        # Save gathered data into a dataframe
+        df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
+        # Export formed dataframe to a SQL database
+        sql_db.connect(df, 'append')
+        #print(f'Car dealer {i} parsed:', href)
+        #i += 1
+
         # Close the newly opened tab
         chrome_driver.close()
         # Switch back to the original tab
@@ -82,11 +96,10 @@ def sel_pars(url):
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
 
-    return dealer_cars
+    # return dealer_cars
 
 
 if __name__ == "__main__":
-    dealer_cars = sel_pars()
-
-    # 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU')
-
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
+    marks_menu = marks.all_marks(url)
+    dealer_cars = parser(url, marks_menu)

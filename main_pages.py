@@ -14,9 +14,12 @@ def pages_urls (url):
 
     # get the number of total pages on the web site
     def total_pages(soup):
-        divs = soup.find('div', attrs={'class': 'ListPage_pagination__v_4ci'})
-        pages = divs.find_all('button', attrs={'class': 'FilteredListPagination_button__41hHM'})[-2].text
-        total_pages = int(pages)
+        try:
+            divs = soup.find('div', attrs={'class': 'ListPage_pagination__v_4ci'})
+            pages = divs.find_all('button', attrs={'class': 'FilteredListPagination_button__41hHM'})[-2].text
+            total_pages = int(pages)
+        except:
+            pass
         return total_pages
 
     # get a list of all URLs from every main page
