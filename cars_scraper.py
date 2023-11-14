@@ -1,3 +1,9 @@
+"""
+This module contains several other modules: main_pages, parsing, dataframe and sql_db. Once a link to a car dealer
+is clicked the module starts to parse info about all corresponding cars. However, it takes around 1,5 hour to complete
+this module.
+"""
+
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -21,7 +27,7 @@ def parser(url, marks_menu):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    extra_arguments('--headless')  # Run Chrome without opening the browser')
+    #extra_arguments('--headless')  # Run Chrome without opening the browser')
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS

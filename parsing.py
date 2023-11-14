@@ -8,7 +8,7 @@ The output of this module are several lists with cars' information: cars names, 
 import requests
 from bs4 import BeautifulSoup
 import re
-# import main_pages
+import main_pages
 
 
 def cars_info(all_pages):
@@ -85,6 +85,6 @@ def cars_info(all_pages):
 
 
 if __name__ == '__main__':
-    # url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
-    # print(pars(main_pages.pages_urls(url)))
-    pass
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
+    all_pages = main_pages.pages_urls(url)
+    cars_info(all_pages)

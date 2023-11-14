@@ -1,5 +1,12 @@
-import pandas as pd
+"""
+This module creates a pandas dataframe from all the acquired information about the cars.
+"""
 
+
+import pandas as pd
+import marks
+import parsing
+import main_pages
 
 def df_construct (marks_menu, cars, characteristics, prices, locations):
     # here we create a blank list where we store all marks names which contain space, for example 'Aston Martin'
@@ -46,4 +53,8 @@ def df_construct (marks_menu, cars, characteristics, prices, locations):
 
 
 if __name__ == '__main__':
-    pass
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
+    all_pages = main_pages.pages_urls(url)
+    cars, characteristics, prices, locations = parsing.cars_info(all_pages)
+    marks_menu = marks.all_marks(url)
+    df_construct(marks_menu, cars, characteristics, prices, locations)

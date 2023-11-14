@@ -1,7 +1,10 @@
 """
-This module selects a pair of each Proxy and random User Agent values from the corresponding txt files. These files have
-been created in advance by other modules (proxies.py and user_agents.py). This module iterates through entire txt files
-and checks the connection with selected pairs IP+User Agent. In order to check that the connection is established
+This module does the same thing as the check_ip_agent. However, it works 6 times faster thanks to the implementation of
+multi threads operation - concurrent.futures. Luckily there is no ban as the website that is used is scraping friendly.
+
+This module selects a pair of each Proxy and a random User Agent values from the corresponding txt files. These files
+have been created in advance by other modules (proxies.py and user_agents.py). This module iterates through entire txt
+files and checks the connection with selected pairs IP+User Agent. In order to check that the connection is established
 correctly, and we managed to change our initial IP and User Agent a website https://www.myip.com/ is used. To make
 future parsing fast we filter the connection speed of every Proxy and keep only those which have less than 2 seconds.
 The good proxies are saved into a txt file 'good_proxies.txt'.
