@@ -4,7 +4,7 @@ been created in advance by other modules (proxies.py and user_agents.py). This m
 and checks the connection with selected pairs IP+User Agent. In order to check that the connection is established
 correctly, and we managed to change our initial IP and User Agent a website https://www.myip.com/ is used. To make
 future parsing fast we filter the connection speed of every Proxy and keep only those which have less than 2 seconds.
-The good proxies are saved into a txt file 'good_proxies.txt'.
+The good proxies are saved into a txt file 'good_proxies.txt'. Execution time around 49 seconds.
 """
 
 import requests

@@ -19,7 +19,7 @@ import marks
 import time
 
 
-def parser(url, marks_menu):
+def parser(url, marks_menu, ua):
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -28,6 +28,7 @@ def parser(url, marks_menu):
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
     #extra_arguments('--headless')  # Run Chrome without opening the browser')
+    chrome_options.add_argument(f'--user-agent={ua}') # Change User Agent
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS
@@ -61,8 +62,6 @@ def parser(url, marks_menu):
             pass
 
     cookies_accept()
-
-    # dealer_cars = []
 
     # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')

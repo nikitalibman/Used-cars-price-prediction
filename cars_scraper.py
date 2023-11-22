@@ -27,7 +27,7 @@ def parser(url, marks_menu):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    #extra_arguments('--headless')  # Run Chrome without opening the browser')
+    extra_arguments('--headless')  # Run Chrome without opening the browser')
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS

@@ -30,7 +30,7 @@ def connect(df, param):
     # Add the current date to the table name
     table_name = f'cars_{current_date}'
     # Upload dataframe to a corresponding table with a current date
-    df.to_sql(table_name, engine, if_exists=param, index=False, schema='autoscout')
+    df.to_sql(table_name, engine, schema='autoscout', if_exists=param, index=False)
 
 
 if __name__ == '__main__':

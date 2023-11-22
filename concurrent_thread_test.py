@@ -1,6 +1,7 @@
 """
 This module does the same thing as the check_ip_agent. However, it works 6 times faster thanks to the implementation of
-multi threads operation - concurrent.futures. Luckily there is no ban as the website that is used is scraping friendly.
+multi threads operation - concurrent.futures. Luckily there is no ban, as the website that is used is scraping friendly.
+Execution time around 7 seconds.
 
 This module selects a pair of each Proxy and a random User Agent values from the corresponding txt files. These files
 have been created in advance by other modules (proxies.py and user_agents.py). This module iterates through entire txt

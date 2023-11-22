@@ -11,7 +11,8 @@ from bs4 import BeautifulSoup
 with open('ip_html.txt') as f:
     html = f.read()
 
-soup = BeautifulSoup(html, 'lxml')
+#soup = BeautifulSoup(html, 'lxml')
+soup = BeautifulSoup(html, 'html5lib')
 ip_soup = soup.find_all('td')
 ip_list = []
 for el in ip_soup:
