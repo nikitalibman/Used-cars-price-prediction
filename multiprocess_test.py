@@ -21,43 +21,42 @@ import random_ip_agent
 
 
 def parser(url, marks_menu, ua):
+
     chrome_options = Options()
-    #chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
+    chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
     #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument(f'--user-agent={ua}') # Change User Agent
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
     chrome_options.add_argument('--disable-gpu')  # Disable CSS
     chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS
     chrome_options.add_argument('--disable-dev-shm-usage')  # Disable CSS
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"]) # Disable automation flags
+    chrome_options.add_experimental_option('useAutomationExtension', False) # Disable automation flags
 
     chrome_driver = webdriver.Chrome(options=chrome_options)
-
-    # Set Chrome preferences to automatically accept cookies
-    #chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})
 
     # Get the page content
     chrome_driver.get(url)
 
-    def cookies_accept():
+    def decline_cookies():
         try:
             # Wait for the consent popup to appear
             consent_popup = WebDriverWait(chrome_driver, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
             )
-            # Check if the "Accept All" button is present
-            accept_all_button = consent_popup.find_element(By.XPATH, '//button[@class="_consent-accept_1i5cd_111"]')
-            if accept_all_button.is_displayed():
-                # Click the "Accept All" button
-                accept_all_button.click()
-
-                # Wait for the consent popup to disappear (short timeout)
-                WebDriverWait(chrome_driver, 10).until_not(
-                    EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-                )
+            # Check if the "Privacy Settings" button is present
+            privacy_settings = consent_popup.find_element(By.XPATH, '//button[@class="_consent-settings_1i5cd_100"]')
+            if privacy_settings.is_displayed():
+                # Click the "Privacy Settings" button
+                privacy_settings.click()
+                save_exit_button = (By.CSS_SELECTOR, 'button[data-testid="as24-cmp-accept-partial-button"]')
+                save_exit_button = WebDriverWait(chrome_driver, 10).until(EC.element_to_be_clickable(save_exit_button))
+                save_exit_button.click()
+                time.sleep(2)
         except:
             pass
 
-    cookies_accept()
+    decline_cookies()
 
     # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
@@ -65,6 +64,10 @@ def parser(url, marks_menu, ua):
     # Here we start the multi threading. The buttons '+ Show more vehicles' will be clicked simultaneously.
 
     for button in buttons:
+        # Here we change User Agent
+        proxy, user_agent = random_ip_agent.rand()
+        # Set the user agent for the current tab
+        chrome_driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent['User-Agent']})
         # Open the link in a new tab
         ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
         # Wait for the new tab to appear

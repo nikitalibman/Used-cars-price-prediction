@@ -1,13 +1,13 @@
 """
 This module scraps all marks names and save it into a list.
 """
+import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 
 def all_marks(url):
     chrome_options = Options()
@@ -18,6 +18,8 @@ def all_marks(url):
     chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS
     chrome_options.add_argument('--disable-dev-shm-usage')  # Disable CSS
     chrome_options.add_argument('--window-size=1920,1080')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"]) # Disable automation flags
+    chrome_options.add_experimental_option('useAutomationExtension', False) # Disable automation flags
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
     # Set Chrome preferences to automatically accept cookies
@@ -32,16 +34,15 @@ def all_marks(url):
             consent_popup = WebDriverWait(chrome_driver, 1).until(
                 EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
             )
-            # Check if the "Accept All" button is present
-            accept_all_button = consent_popup.find_element(By.XPATH, '//button[@class="_consent-accept_1i5cd_111"]')
-            if accept_all_button.is_displayed():
-                # Click the "Accept All" button
-                accept_all_button.click()
-
-                # Wait for the consent popup to disappear (short timeout)
-                WebDriverWait(chrome_driver, 1).until_not(
-                    EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-                )
+            # Check if the "Privacy Settings" button is present
+            privacy_settings = consent_popup.find_element(By.XPATH, '//button[@class="_consent-settings_1i5cd_100"]')
+            if privacy_settings.is_displayed():
+                # Click the "Privacy Settings" button
+                privacy_settings.click()
+                save_exit_button = (By.CSS_SELECTOR, 'button[data-testid="as24-cmp-accept-partial-button"]')
+                save_exit_button = WebDriverWait(chrome_driver, 10).until(EC.element_to_be_clickable(save_exit_button))
+                save_exit_button.click()
+                time.sleep(2)
         except:
             pass
 
@@ -62,7 +63,6 @@ def all_marks(url):
         marks_list.append(mark.text)
 
     chrome_driver.quit()
-    print(marks_list)
 
     return marks_list
 

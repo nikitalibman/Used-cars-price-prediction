@@ -21,4 +21,5 @@ def rand():
 
 
 if __name__ == '__main__':
-    print(rand())
+    p, ua = rand()
+    print(ua)
