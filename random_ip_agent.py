@@ -8,16 +8,16 @@ from random import choice
 
 
 def rand():
-    with open('user_agents.txt') as useragents_file:#, open('good_proxies.txt') as proxies_file:
+    with open('user_agents.txt') as useragents_file, open('proxies.txt') as proxies_file:
         useragents = useragents_file.read().split('\n')[:-1]
-        #proxies = proxies_file.read().split('\n')[:-1]
-    #random_proxy = choice(proxies)
-    #proxy = {
-   #    'http': 'http://' + random_proxy,
-    #    'https': 'https://' + random_proxy
-   # }
+        proxies = proxies_file.read().split('\n')[:-1]
+    random_proxy = choice(proxies)
+    proxy = {
+       'http': 'http://' + random_proxy,
+        'https': 'https://' + random_proxy
+    }
     useragent = {'User-Agent': choice(useragents)}
-    return useragent #proxy, useragent
+    return proxy, useragent
 
 
 if __name__ == '__main__':

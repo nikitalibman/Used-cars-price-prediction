@@ -17,27 +17,23 @@ import dataframe
 import sql_db
 import marks
 import time
+import random_ip_agent
 
 
 def parser(url, marks_menu, ua):
     chrome_options = Options()
-
-    def extra_arguments(arg):
-        chrome_options.add_argument(arg)
-        return chrome_options
-
-    extra_arguments('--incognito')  # Run Chrome in incognito mode
-    #extra_arguments('--headless')  # Run Chrome without opening the browser')
+    #chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
+    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument(f'--user-agent={ua}') # Change User Agent
-    extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
-    extra_arguments('--disable-gpu')  # Disable CSS
-    extra_arguments('--disable-software-rasterizer')  # Disable CSS
-    extra_arguments('--disable-dev-shm-usage')  # Disable CSS
+    chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
+    chrome_options.add_argument('--disable-gpu')  # Disable CSS
+    chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Disable CSS
 
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
     # Set Chrome preferences to automatically accept cookies
-    chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})
+    #chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})
 
     # Get the page content
     chrome_driver.get(url)
@@ -101,10 +97,9 @@ def parser(url, marks_menu, ua):
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
 
-    # return dealer_cars
-
 
 if __name__ == "__main__":
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     marks_menu = marks.all_marks(url)
-    dealer_cars = parser(url, marks_menu)
+    proxy, ua = random_ip_agent.rand()
+    dealer_cars = parser(url, marks_menu, ua)

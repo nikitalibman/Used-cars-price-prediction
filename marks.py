@@ -7,21 +7,17 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import time
 
 def all_marks(url):
     chrome_options = Options()
-
-    def extra_arguments(arg):
-        chrome_options.add_argument(arg)
-        return chrome_options
-
-    extra_arguments('--incognito')  # Run Chrome in incognito mode
-    #extra_arguments('--headless')  # Run Chrome without opening the browser')
-    extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
-    extra_arguments('--disable-gpu')  # Disable CSS
-    extra_arguments('--disable-software-rasterizer')  # Disable CSS
-    extra_arguments('--disable-dev-shm-usage')  # Disable CSS
-
+    chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
+    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
+    chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
+    chrome_options.add_argument('--disable-gpu')  # Disable CSS
+    chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Disable CSS
+    chrome_options.add_argument('--window-size=1920,1080')
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
     # Set Chrome preferences to automatically accept cookies
@@ -51,6 +47,8 @@ def all_marks(url):
 
     cookies_accept()
 
+    #chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
+
     # Wait for the marks button to be clickable
     marks_button = WebDriverWait(chrome_driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, 'input-wrapper')))
     marks_button.click()
@@ -64,6 +62,7 @@ def all_marks(url):
         marks_list.append(mark.text)
 
     chrome_driver.quit()
+    print(marks_list)
 
     return marks_list
 
