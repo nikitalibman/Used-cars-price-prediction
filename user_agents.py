@@ -8,23 +8,28 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import json
 
 
 def main(url):
     chrome_driver = webdriver.Chrome()
     chrome_driver.get(url)
 
-    user_agents = []
+    main_element = WebDriverWait(chrome_driver, 10).until(
+        EC.presence_of_element_located((By.ID, 'most-common-desktop-useragents-json-csv'))
+    )
+    nested_element = main_element.find_element(By.CLASS_NAME, 'col-lg-6')
+    json_ua = nested_element.find_element(By.CLASS_NAME, 'form-control').text
 
-    elements = WebDriverWait(chrome_driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME,
-                                                                                           'useragent')))
-    for element in elements:
-        user_agents.append(element.text)
+    user_agents_list = json.loads(json_ua)
 
-        with open('user_agents.txt', 'w') as f:
-            for item in user_agents[1:]:
-                f.write("%s\n" % item)
+    user_agents = [entry['ua'] for entry in user_agents_list]
+
+    with open('user_agents.txt', 'w') as f:
+        for ua in user_agents:
+            f.write(f'{ua}\n')
+
 
 if __name__ == '__main__':
-    url = 'https://techblog.willshouse.com/2012/01/03/most-common-user-agents/'
+    url = 'https://www.useragents.me/#most-common-desktop-useragents-json-csv'
     main(url)
