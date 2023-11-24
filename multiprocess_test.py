@@ -18,13 +18,14 @@ import sql_db
 import marks
 import time
 import random_ip_agent
+import concurrent.futures
 
 
 def parser(url, marks_menu, ua):
 
     chrome_options = Options()
     chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
-    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
+    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument(f'--user-agent={ua}') # Change User Agent
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
     chrome_options.add_argument('--disable-gpu')  # Disable CSS
@@ -61,41 +62,50 @@ def parser(url, marks_menu, ua):
     # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
 
+
+    def button_clicker():
+
+        for button in buttons:
+            # Here we pick a random User Agent
+            proxy, user_agent = random_ip_agent.rand()
+            # Set the user agent for the current tab
+            chrome_driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent['User-Agent']})
+            # Open the link in a new tab
+            ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
+            # Wait for the new tab to appear
+            WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
+            # Switch to the newly opened tab
+            chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
+            # Add a delay to ensure the new tab is fully loaded
+            time.sleep(5)
+
+            # Here we start scraping info about cars from the current car dealer
+
+            # Get a URL of the current car dealer
+            href = chrome_driver.current_url
+            # Collect all pages of the current car dealer
+            dealer_pages = main_pages.pages_urls(href)
+            # Scrap data about each car from this dealer
+            cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
+            # Save gathered data into a dataframe
+            df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
+            # Export formed dataframe to a SQL database
+            sql_db.connect(df, 'append')
+            #print(f'Car dealer {i} parsed:', href)
+            #i += 1
+
+            # Close the newly opened tab
+            chrome_driver.close()
+            # Switch back to the original tab
+            chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+
     # Here we start the multi threading. The buttons '+ Show more vehicles' will be clicked simultaneously.
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = [executor.submit(button_clicker, button) for button in buttons]
 
-    for button in buttons:
-        # Here we change User Agent
-        proxy, user_agent = random_ip_agent.rand()
-        # Set the user agent for the current tab
-        chrome_driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent['User-Agent']})
-        # Open the link in a new tab
-        ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
-        # Wait for the new tab to appear
-        WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
-        # Switch to the newly opened tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
-        # Add a delay to ensure the new tab is fully loaded
-        time.sleep(5)
-
-        # Here we start scraping info about cars from the current car dealer
-
-        # Get a URL of the current car dealer
-        href = chrome_driver.current_url
-        # Collect all pages of the current car dealer
-        dealer_pages = main_pages.pages_urls(href)
-        # Scrap data about each car from this dealer
-        cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
-        # Save gathered data into a dataframe
-        df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
-        # Export formed dataframe to a SQL database
-        sql_db.connect(df, 'append')
-        #print(f'Car dealer {i} parsed:', href)
-        #i += 1
-
-        # Close the newly opened tab
-        chrome_driver.close()
-        # Switch back to the original tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+        #for future in concurrent.futures.as_completed(results):
+        #    result = future.result()
+        #    print(result)
 
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
