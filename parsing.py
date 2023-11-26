@@ -15,9 +15,12 @@ def cars_info(all_pages):
     # here we create a list of html codes as soup elements about all pages
     def html_list():
         soups_list = []
-        for k in all_pages:
-            soups_list.append(BeautifulSoup(requests.get(k).text, 'lxml'))
-        return soups_list
+        try:
+            for k in all_pages:
+                soups_list.append(BeautifulSoup(requests.get(k).text, 'lxml'))
+            return soups_list
+        except:
+            pass
 
     soups_list = html_list()
 

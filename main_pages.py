@@ -26,17 +26,20 @@ def pages_urls (url):
     # get a list of all URLs from every main page
     def pages_urls(url):
         all_pages = []
-        for i in range(1, total_pages(soup) + 1):
-            if len(url) > 100:
-                url_parts = url.split('&')
-                url_parts[2] = f'page={i}'
-            else:
-                url = url+'&search_id=gxrsmwbnl8&source=listpage_pagination'
-                url_parts = url.split('&')
-                url_parts[2] = f'page={i}'
-            url = '&'.join(url_parts)
-            all_pages.append(url)
-        return all_pages
+        try:
+            for i in range(1, total_pages(soup) + 1):
+                if len(url) > 100:
+                    url_parts = url.split('&')
+                    url_parts[2] = f'page={i}'
+                else:
+                    url = url+'&search_id=gxrsmwbnl8&source=listpage_pagination'
+                    url_parts = url.split('&')
+                    url_parts[2] = f'page={i}'
+                url = '&'.join(url_parts)
+                all_pages.append(url)
+            return all_pages
+        except:
+            pass
 
     return pages_urls(url)
 
