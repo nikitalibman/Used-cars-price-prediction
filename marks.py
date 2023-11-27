@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def all_marks(url):
     chrome_options = Options()
     chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
-    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
+    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
     chrome_options.add_argument('--disable-gpu')  # Disable CSS
     chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS

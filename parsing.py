@@ -15,11 +15,12 @@ def cars_info(all_pages):
     # here we create a list of html codes as soup elements about all pages
     def html_list():
         soups_list = []
-        for k in all_pages:
-            try:
-                soups_list.append(BeautifulSoup(requests.get(k).text, 'lxml'))
-            except:
-                continue
+        if all_pages is not None:
+            for k in all_pages:
+                try:
+                    soups_list.append(BeautifulSoup(requests.get(k).text, 'lxml'))
+                except:
+                    continue
         return soups_list
 
     soups_list = html_list()
@@ -90,4 +91,4 @@ def cars_info(all_pages):
 if __name__ == '__main__':
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     all_pages = main_pages.pages_urls(url)
-    cars_info(all_pages)
+    print(cars_info(all_pages))

@@ -5,7 +5,7 @@ starts to parse info about all corresponding cars. This module can be iterated o
 a table of all cars with their complete info that is exported to a SQL database. However, it takes around 1,5 hour
 to complete this module.
 """
-
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -29,11 +29,14 @@ def parser(url, marks_menu):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    extra_arguments('--headless')  # Run Chrome without opening the browser')
+    extra_arguments('--headless')  # Run Chrome without opening the browser
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS
     extra_arguments('--disable-dev-shm-usage')  # Disable CSS
+    chrome_options.add_argument('--window-size=1920,1080')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
 
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
@@ -96,6 +99,11 @@ def parser(url, marks_menu):
 
 
 if __name__ == "__main__":
+    start = datetime.now()
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     marks_menu = marks.all_marks(url)
     dealer_cars = parser(url, marks_menu)
+    end = datetime.now()
+    print('Total time :', end - start)
+
+
