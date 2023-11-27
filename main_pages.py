@@ -12,7 +12,7 @@ def pages_urls (url):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'lxml')
 
-    # get the number of total pages on the web site
+    # get the number of total pages on the website
     def total_pages(soup):
         try:
             divs = soup.find('div', attrs={'class': 'ListPage_pagination__v_4ci'})
