@@ -1,7 +1,9 @@
 """
-This module contains several other modules: main_pages, parsing, dataframe and sql_db. Once a link to a car dealer
-is clicked the module starts to parse info about all corresponding cars. However, it takes around 1,5 hour to complete
-this module.
+This module contains several other modules: main_pages, parsing, dataframe and sql_db. This script parses one of the
+main pages in order to find all the buttons '+ Show more vehicles'. Once a link to a car dealer is clicked the module
+starts to parse info about all corresponding cars. This module can be iterated over the all main pages. The result is
+a table of all cars with their complete info that is exported to a SQL database. However, it takes around 1,5 hour
+to complete this module.
 """
 
 from selenium import webdriver
@@ -41,33 +43,25 @@ def parser(url, marks_menu):
     # Get the page content
     chrome_driver.get(url)
 
-    def cookies_accept():
+    def decline_cookies():
         try:
-            # Wait for the consent popup to appear
-            consent_popup = WebDriverWait(chrome_driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-            )
-            # Check if the "Accept All" button is present
-            accept_all_button = consent_popup.find_element(By.XPATH, '//button[@class="_consent-accept_1i5cd_111"]')
-            if accept_all_button.is_displayed():
-                # Click the "Accept All" button
-                accept_all_button.click()
-
-                # Wait for the consent popup to disappear (short timeout)
-                WebDriverWait(chrome_driver, 10).until_not(
-                    EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-                )
+            # Wait for the cookies consent popup to appear
+            privacy_settings = chrome_driver.find_element(By.CLASS_NAME, "_consent-settings_p8dbx_100")
+            if privacy_settings.is_displayed():
+                # Click the "Privacy Settings" button
+                privacy_settings.click()
+                save_exit_button = (By.CSS_SELECTOR, 'button[data-testid="as24-cmp-accept-partial-button"]')
+                save_exit_button = WebDriverWait(chrome_driver, 10).until(EC.element_to_be_clickable(save_exit_button))
+                save_exit_button.click()
+                time.sleep(2)
         except:
             pass
 
-    cookies_accept()
-
-    # dealer_cars = []
+    decline_cookies()
 
     # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
 
-    #i = 0
 
     for button in buttons:
         # Open the link in a new tab
@@ -91,8 +85,6 @@ def parser(url, marks_menu):
         df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
         # Export formed dataframe to a SQL database
         sql_db.connect(df, 'append')
-        #print(f'Car dealer {i} parsed:', href)
-        #i += 1
 
         # Close the newly opened tab
         chrome_driver.close()
@@ -101,8 +93,6 @@ def parser(url, marks_menu):
 
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
-
-    # return dealer_cars
 
 
 if __name__ == "__main__":

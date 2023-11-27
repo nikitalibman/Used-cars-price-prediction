@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def all_marks(url):
     chrome_options = Options()
     chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
-    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
+    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
     chrome_options.add_argument('--disable-gpu')  # Disable CSS
     chrome_options.add_argument('--disable-software-rasterizer')  # Disable CSS
@@ -22,20 +22,14 @@ def all_marks(url):
     chrome_options.add_experimental_option('useAutomationExtension', False) # Disable automation flags
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
-    # Set Chrome preferences to automatically accept cookies
-    chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})
 
     # Get the page content
     chrome_driver.get(url)
 
-    def cookies_accept():
+    def decline_cookies():
         try:
-            # Wait for the consent popup to appear
-            consent_popup = WebDriverWait(chrome_driver, 1).until(
-                EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-            )
-            # Check if the "Privacy Settings" button is present
-            privacy_settings = consent_popup.find_element(By.XPATH, '//button[@class="_consent-settings_1i5cd_100"]')
+            # Wait for the cookies consent popup to appear
+            privacy_settings = chrome_driver.find_element(By.CLASS_NAME, "_consent-settings_p8dbx_100")
             if privacy_settings.is_displayed():
                 # Click the "Privacy Settings" button
                 privacy_settings.click()
@@ -46,7 +40,7 @@ def all_marks(url):
         except:
             pass
 
-    cookies_accept()
+    decline_cookies()
 
     #chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
 
@@ -69,4 +63,4 @@ def all_marks(url):
 
 if __name__ == "__main__":
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
-    all_marks(url)
+    print(all_marks(url))

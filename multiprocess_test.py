@@ -1,7 +1,10 @@
 """
-This module contains several other modules: main_pages, parsing, dataframe and sql_db. Once a link to a car dealer
-is clicked the module starts to parse info about all corresponding cars. However, it takes around 1,5 hour to complete
-this module.
+This module parses info from one of the main pages. It looks for the buttons '+ Show more vehicles' and cliscks on them.
+Once a link to a car dealer is clicked the module starts to parse info about all corresponding cars. This module
+contains several other modules: main_pages, parsing, dataframe and sql_db.  However, it takes around 1,5 hour to
+complete this module. In order to speed this script a multithreading approach is implemented. Clicking on the car
+dealers buttons with further info scraping will be split into several concurrent threads.
+
 """
 
 from selenium import webdriver
@@ -25,7 +28,7 @@ def parser(url, marks_menu, ua):
 
     chrome_options = Options()
     chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
-    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
+    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')
     chrome_options.add_argument(f'--user-agent={ua}') # Change User Agent
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')  # Disable images
     chrome_options.add_argument('--disable-gpu')  # Disable CSS
@@ -41,12 +44,8 @@ def parser(url, marks_menu, ua):
 
     def decline_cookies():
         try:
-            # Wait for the consent popup to appear
-            consent_popup = WebDriverWait(chrome_driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, '_consent-popup_1i5cd_1'))
-            )
-            # Check if the "Privacy Settings" button is present
-            privacy_settings = consent_popup.find_element(By.XPATH, '//button[@class="_consent-settings_1i5cd_100"]')
+            # Wait for the cookies consent popup to appear
+            privacy_settings = chrome_driver.find_element(By.CLASS_NAME, "_consent-settings_p8dbx_100")
             if privacy_settings.is_displayed():
                 # Click the "Privacy Settings" button
                 privacy_settings.click()
@@ -66,6 +65,8 @@ def parser(url, marks_menu, ua):
     def button_clicker():
 
         for button in buttons:
+
+            chrome_driver = webdriver.Chrome(options=chrome_options)
             # Here we pick a random User Agent
             proxy, user_agent = random_ip_agent.rand()
             # Set the user agent for the current tab
@@ -91,25 +92,19 @@ def parser(url, marks_menu, ua):
             df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
             # Export formed dataframe to a SQL database
             sql_db.connect(df, 'append')
-            #print(f'Car dealer {i} parsed:', href)
-            #i += 1
 
             # Close the newly opened tab
             chrome_driver.close()
             # Switch back to the original tab
             chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+            # Close the WebDriver to properly clean up resources
+            chrome_driver.quit()
+
+    button_clicker()
 
     # Here we start the multi threading. The buttons '+ Show more vehicles' will be clicked simultaneously.
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        results = [executor.submit(button_clicker, button) for button in buttons]
-
-        #for future in concurrent.futures.as_completed(results):
-        #    result = future.result()
-        #    print(result)
-
-    # Close the WebDriver to properly clean up resources
-    chrome_driver.quit()
-
+    #with concurrent.futures.ThreadPoolExecutor() as executor:
+    #    results = [executor.submit(button_clicker, button) for button in buttons]
 
 if __name__ == "__main__":
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
