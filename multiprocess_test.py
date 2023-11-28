@@ -10,16 +10,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import concurrent.futures
-import random_ip_agent
+import random_ua
 import main_pages
 import parsing
 import dataframe
 import sql_db
 import marks
-import threading
-
-
-lock = threading.Lock()
 
 
 def decline_cookies(driver):
@@ -37,10 +33,10 @@ def decline_cookies(driver):
         pass
 
 def button_clicker(button, marks_menu):
-    # Create a new WebDriver instance for each thread
     chrome_options = Options()
     chrome_options.add_argument('--incognito')
-    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser
+    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser'
+    chrome_options.add_argument(f'--user-agent={random_ua.main()["User-Agent"]}')
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--disable-software-rasterizer')
@@ -49,43 +45,57 @@ def button_clicker(button, marks_menu):
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
 
-    with webdriver.Chrome(options=chrome_options) as chrome_driver:
+    chrome_driver = webdriver.Chrome(options=chrome_options)
+    try:
+        current_tab_handle = chrome_driver.current_window_handle
+        # Get the page content
+        chrome_driver.get(url)
+
+        # Decline cookies if the popup is present
+        decline_cookies(chrome_driver)
+
         # Here we pick a random User Agent
-        proxy, user_agent = random_ip_agent.rand()
+        user_agent = random_ua.main()
         # Set the user agent for the current tab
         chrome_driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent['User-Agent']})
         # Open the link in a new tab
-        ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
+        #ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
+        # Open the link in a new tab using JavaScript to simulate a click
+        chrome_driver.execute_script("arguments[0].target='_blank'; arguments[0].click();", button)
         # Wait for the new tab to appear
         WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
+        # Identify the new tab handle
+        new_tab_handle = [handle for handle in chrome_driver.window_handles if handle != current_tab_handle][0]
         # Switch to the newly opened tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
+        chrome_driver.switch_to.window(new_tab_handle)
+        #chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
+        # Wait for an element with the specified class to be present on the page
+        element_class = "ListItem_title__znV2I ListItem_title_new_design__lYiAv Link_link__pjU1l"
+        WebDriverWait(chrome_driver, 15).until(EC.presence_of_element_located((By.CLASS_NAME, element_class)))
         # Add a delay to ensure the new tab is fully loaded
-        time.sleep(5)
+        #time.sleep(5)
 
-        try:
-            #with lock:
-            #print("Inside the lock")
-            # Here we start scraping info about cars from the current car dealer
-            # Get a URL of the current car dealer
-            href = chrome_driver.current_url
-            # Collect all pages of the current car dealer
-            dealer_pages = main_pages.pages_urls(href)
-            # Scrap data about each car from this dealer
-            cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
-            # Save gathered data into a dataframe
-            df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
-            # Export formed dataframe to a SQL database
-            sql_db.connect(df, 'append')
-            print(f'Data exported from the dealer {button}')
-
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+        # Here we start scraping info about cars from the current car dealer
+        # Get a URL of the current car dealer
+        href = chrome_driver.current_url
+        # Collect all pages of the current car dealer
+        dealer_pages = main_pages.pages_urls(href)
+        # Scrap data about each car from this dealer
+        cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
+        # Save gathered data into a dataframe
+        df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
+        print(df)
+        # Export formed dataframe to a SQL database
+        sql_db.connect(df, 'append')
+        print(f'Data exported from the dealer {button}')
+    finally:
+        # Close the WebDriver to properly clean up resources
+        chrome_driver.quit()
 
 def main(url, marks_menu, ua):
     chrome_options = Options()
     chrome_options.add_argument('--incognito')
-    chrome_options.add_argument('--headless')  # Run Chrome without opening the browser'
+    #chrome_options.add_argument('--headless')  # Run Chrome without opening the browser'
     chrome_options.add_argument(f'--user-agent={ua}')
     chrome_options.add_argument('--blink-settings=imagesEnabled=false')
     chrome_options.add_argument('--disable-gpu')
@@ -107,10 +117,13 @@ def main(url, marks_menu, ua):
     buttons = WebDriverWait(chrome_driver, 15).until(
         EC.presence_of_all_elements_located((By.LINK_TEXT, '+ Show more vehicles'))
     )
-
+    print('start of multithreading')
     # Here we start the multi-threading. The buttons '+ Show more vehicles' will be clicked simultaneously.
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(button_clicker, buttons, [marks_menu] * len(buttons))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        futures = [executor.submit(button_clicker, button, marks_menu) for button in buttons]
+
+    # Wait for all threads to complete
+    concurrent.futures.wait(futures)
 
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
@@ -119,8 +132,8 @@ if __name__ == "__main__":
     start = datetime.now()
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     marks_menu = marks.all_marks(url)
-    proxy, ua = random_ip_agent.rand()
-    dealer_cars = main(url, marks_menu, ua)
+    ua = random_ua.main()
+    main(url, marks_menu, ua)
     end = datetime.now()
     print('Total time :', end - start)
 

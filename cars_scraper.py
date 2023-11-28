@@ -40,8 +40,6 @@ def parser(url, marks_menu):
 
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
-    # Set Chrome preferences to automatically accept cookies
-    chrome_options.add_experimental_option("prefs", {"profile.default_content_setting_values.cookies": 2})
 
     # Get the page content
     chrome_driver.get(url)
