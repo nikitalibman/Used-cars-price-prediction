@@ -16,12 +16,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 import main_pages
 import parsing
 import dataframe
+import random_ua
 import sql_db
 import marks
 import time
 
 
-def parser(url, marks_menu):
+def parser(url, marks_menu, ua):
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -29,7 +30,8 @@ def parser(url, marks_menu):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    extra_arguments('--headless')  # Run Chrome without opening the browser
+    extra_arguments('--headless')
+    chrome_options.add_argument(f'--user-agent={ua}')# Run Chrome without opening the browser
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS
@@ -100,7 +102,8 @@ if __name__ == "__main__":
     start = datetime.now()
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     marks_menu = marks.all_marks(url)
-    dealer_cars = parser(url, marks_menu)
+    ua = random_ua.main()
+    dealer_cars = parser(url, marks_menu, ua)
     end = datetime.now()
     print('Total time :', end - start)
 
