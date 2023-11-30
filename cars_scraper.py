@@ -22,7 +22,7 @@ import marks
 import time
 
 
-def parser(url, marks_menu, ua):
+def parser(url, marks_menu):
     chrome_options = Options()
 
     def extra_arguments(arg):
@@ -30,20 +30,19 @@ def parser(url, marks_menu, ua):
         return chrome_options
 
     extra_arguments('--incognito')  # Run Chrome in incognito mode
-    extra_arguments('--headless')
-    chrome_options.add_argument(f'--user-agent={ua}')# Run Chrome without opening the browser
+    extra_arguments('--headless')  # Run Chrome without opening the browser
+    chrome_options.add_argument(f'--user-agent={random_ua.main()["User-Agent"]}')  # change user agent
     extra_arguments('--blink-settings=imagesEnabled=false')  # Disable images
     extra_arguments('--disable-gpu')  # Disable CSS
     extra_arguments('--disable-software-rasterizer')  # Disable CSS
     extra_arguments('--disable-dev-shm-usage')  # Disable CSS
     chrome_options.add_argument('--window-size=1920,1080')
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option('useAutomationExtension', False)
-
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"]) # Avoid automated testing detection
+    chrome_options.add_experimental_option('useAutomationExtension', False) # Turn off detection as an automated script
+    # Initialize Chrome WebDriver with custom options
     chrome_driver = webdriver.Chrome(options=chrome_options)
 
-
-    # Get the page content
+    # Open the specified URL
     chrome_driver.get(url)
 
     def decline_cookies():
@@ -64,7 +63,6 @@ def parser(url, marks_menu, ua):
 
     # Looking for buttons '+ Show more vehicles' and gather them into a beatiful_soup list object
     buttons = chrome_driver.find_elements(By.LINK_TEXT, '+ Show more vehicles')
-
 
     for button in buttons:
         # Open the link in a new tab
@@ -102,9 +100,6 @@ if __name__ == "__main__":
     start = datetime.now()
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     marks_menu = marks.all_marks(url)
-    ua = random_ua.main()
-    dealer_cars = parser(url, marks_menu, ua)
+    dealer_cars = parser(url, marks_menu)
     end = datetime.now()
     print('Total time :', end - start)
-
-
