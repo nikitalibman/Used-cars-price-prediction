@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.common import StaleElementReferenceException
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -57,7 +58,17 @@ def button_click(chrome_driver, button):
     return href
 
 
-def process_button(url, button):
+# def process_button(url, button):
+#     options = chrome_options()
+#     chrome_driver = webdriver.Chrome(options=options)
+#     chrome_driver.get(url)
+#     decline_cookies(chrome_driver)
+#     time.sleep(1)
+#     href = button_click(chrome_driver, button)
+#     chrome_driver.quit()
+#     return href
+
+def main(url, button):
     options = chrome_options()
     chrome_driver = webdriver.Chrome(options=options)
     chrome_driver.get(url)
@@ -67,21 +78,23 @@ def process_button(url, button):
     chrome_driver.quit()
     return href
 
-def main(url):
+
+if __name__ == '__main__':
+    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     options = chrome_options()
     chrome_driver = webdriver.Chrome(options=options)
     chrome_driver.get(url)
     decline_cookies(chrome_driver)
     time.sleep(1)
-    buttons = find_buttons(chrome_driver)
 
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(process_button, url, button) for button in buttons]
-        hrefs = [future.result() for future in futures]
+    buttons = find_buttons(chrome_driver)
+    buttons = buttons[:3]
+
+    with ThreadPoolExecutor(max_workers=len(buttons)) as executor:
+        # Use map to pass multiple arguments to the function
+        result_urls = list(executor.map(main, [url] * len(buttons), buttons))
 
     chrome_driver.quit()
-    return hrefs
 
-if __name__ == '__main__':
-    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
-    print(main(url))
+    # Now, result_urls contains all the acquired URLs
+    print(result_urls)
