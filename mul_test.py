@@ -1,10 +1,3 @@
-"""
-This script parses one of the main pages in order to find all the buttons '+ Show more vehicles'. Once the button is
-found it is clicked and a page opens in a new tab. Then a URL of the current page is acquired and stored into a list.
-The output of the script is a list of all acquired dealers links. Execution time is 1 minute.
-"""
-
-
 
 from datetime import datetime
 from selenium import webdriver
@@ -15,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import random_ua
 import time
+import concurrent.futures
 
 
 def chrome_options():
@@ -31,6 +25,7 @@ def chrome_options():
                                            ["enable-automation"])  # Avoid automated testing detection
     chrome_options.add_experimental_option('useAutomationExtension', False)  # Turn off detection as an automated script
     return chrome_options
+
 
 
 def decline_cookies(chrome_driver):
@@ -63,15 +58,16 @@ def button_click(chrome_driver, button):
     # Wait for the new tab to appear
     WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
     # Switch to the newly opened tab
-    chrome_driver.switch_to.window(chrome_driver.window_handles[-1])
+    #chrome_driver.switch_to.window(chrome_driver.window_handles[n])
     # Add a delay to ensure the new tab is fully loaded
-    time.sleep(1)
-    href = chrome_driver.current_url
+    #time.sleep(2)
+    # Get the URL of the current tab
+    #href = chrome_driver.current_url
     # Close the newly opened tab
-    chrome_driver.close()
+    #chrome_driver.close()
     # Switch back to the original tab
-    chrome_driver.switch_to.window(chrome_driver.window_handles[0])
-    return href
+    #chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+    #return href
 
 
 def main(url):
@@ -81,9 +77,21 @@ def main(url):
     decline_cookies(chrome_driver)
     time.sleep(1)
     buttons = find_buttons(chrome_driver)
+
+
+    def process_button(button):
+        return button_click(chrome_driver, button)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(buttons)) as executor:
+        # Use executor.map to apply the function to each button concurrently
+        executor.map(process_button, buttons)
+
     hrefs = []
-    for button in buttons:
-        hrefs.append(button_click(chrome_driver, button))
+
+    for handle in chrome_driver.window_handles:
+        chrome_driver.switch_to.window(handle)
+        hrefs.append(chrome_driver.current_url)
+
     chrome_driver.quit()
     return hrefs
 

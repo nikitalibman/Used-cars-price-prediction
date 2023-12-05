@@ -76,21 +76,24 @@ def parser(url, marks_menu):
 
         # Here we start scraping info about cars from the current car dealer
 
-        # Get a URL of the current car dealer
-        href = chrome_driver.current_url
-        # Collect all pages of the current car dealer
-        dealer_pages = main_pages.pages_urls(href)
-        # Scrap data about each car from this dealer
-        cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
-        # Save gathered data into a dataframe
-        df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
-        # Export formed dataframe to a SQL database
-        sql_db.connect(df, 'append')
+        try:
+            # Get a URL of the current car dealer
+            href = chrome_driver.current_url
+            # Collect all pages of the current car dealer
+            dealer_pages = main_pages.pages_urls(href)
+            # Scrap data about each car from this dealer
+            cars, characteristics, prices, locations = parsing.cars_info(dealer_pages)
+            # Save gathered data into a dataframe
+            df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
+            # Export formed dataframe to a SQL database
+            sql_db.connect(df, 'append')
 
-        # Close the newly opened tab
-        chrome_driver.close()
-        # Switch back to the original tab
-        chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+            # Close the newly opened tab
+            chrome_driver.close()
+            # Switch back to the original tab
+            chrome_driver.switch_to.window(chrome_driver.window_handles[0])
+        except:
+            pass
 
     # Close the WebDriver to properly clean up resources
     chrome_driver.quit()
