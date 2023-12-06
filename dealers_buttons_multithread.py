@@ -1,3 +1,11 @@
+"""
+The logic of this script is the same as in the dealers_buttons.py. However, the buttons '+ Show more vehicles' are
+clicked concurrently. When all tabs are opened a for loop iterates over them and acquires URLs into a list. The output
+of this script is a list of the links to all car dealers from the current main page.
+Execution time is 56 seconds.
+"""
+
+
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver import ActionChains, Keys
@@ -71,7 +79,7 @@ def main(url):
 
     hrefs = []
 
-    for handle in chrome_driver.window_handles:
+    for handle in chrome_driver.window_handles[1:]:
         chrome_driver.switch_to.window(handle)
         hrefs.append(chrome_driver.current_url)
 

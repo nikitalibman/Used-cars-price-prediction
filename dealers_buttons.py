@@ -1,10 +1,9 @@
 """
 This script parses one of the main pages in order to find all the buttons '+ Show more vehicles'. Once the button is
 found it is clicked and a page opens in a new tab. Then a URL of the current page is acquired and stored into a list.
-The output of the script is a list of all acquired dealers links. Execution time is 1 minute.
+The output of the script is a list of all acquired dealers links from the current main page.
+Execution time is 1 minute and 6 seconds.
 """
-
-
 
 from datetime import datetime
 from selenium import webdriver
