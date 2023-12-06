@@ -1,6 +1,6 @@
 """
 This module creates a list of most common User Agents. In order to form this list we parse a website
-https://techblog.willshouse.com/2012/01/03/most-common-user-agents/. The result of this module is a txt file
+https://www.useragents.me/#most-common-desktop-useragents-json-csv. The result of this module is a txt file
 'user_agents.txt' with a comprehensive list of User Agents.
 """
 

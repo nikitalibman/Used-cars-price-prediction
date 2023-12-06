@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver import ActionChains, Keys
@@ -25,7 +24,6 @@ def chrome_options():
                                            ["enable-automation"])  # Avoid automated testing detection
     chrome_options.add_experimental_option('useAutomationExtension', False)  # Turn off detection as an automated script
     return chrome_options
-
 
 
 def decline_cookies(chrome_driver):
@@ -55,19 +53,6 @@ def button_click(chrome_driver, button):
     chrome_driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent['User-Agent']})
     # Open the link in a new tab
     ActionChains(chrome_driver).key_down(Keys.CONTROL).click(button).key_up(Keys.CONTROL).perform()
-    # Wait for the new tab to appear
-    WebDriverWait(chrome_driver, 15).until(lambda driver: len(chrome_driver.window_handles) > 1)
-    # Switch to the newly opened tab
-    #chrome_driver.switch_to.window(chrome_driver.window_handles[n])
-    # Add a delay to ensure the new tab is fully loaded
-    #time.sleep(2)
-    # Get the URL of the current tab
-    #href = chrome_driver.current_url
-    # Close the newly opened tab
-    #chrome_driver.close()
-    # Switch back to the original tab
-    #chrome_driver.switch_to.window(chrome_driver.window_handles[0])
-    #return href
 
 
 def main(url):
@@ -78,12 +63,10 @@ def main(url):
     time.sleep(1)
     buttons = find_buttons(chrome_driver)
 
-
     def process_button(button):
         return button_click(chrome_driver, button)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(buttons)) as executor:
-        # Use executor.map to apply the function to each button concurrently
         executor.map(process_button, buttons)
 
     hrefs = []
@@ -102,4 +85,3 @@ if __name__ == '__main__':
     print(main(url))
     end = datetime.now()
     print('Total time :', end - start)
-

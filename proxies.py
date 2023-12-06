@@ -3,7 +3,7 @@ In order to run this module we have to go to the website https://hidemy.io/en/pr
 and select checkboxes Proxy types: 'HTTPS' and Anonymity: 'High' and click the button 'Show'.
 Then we have to manually inspect the appeared table and copy the entire html element <table>.
 The extracted html code we save into a txt file 'ip_html.txt'.
-The result of this module returns a txt file with all valid and fresh proxy servers
+The result of this module returns a txt file 'proxies.txt' with all valid and fresh proxy servers
 """
 
 from bs4 import BeautifulSoup
