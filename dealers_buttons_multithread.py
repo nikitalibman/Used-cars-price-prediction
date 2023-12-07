@@ -70,11 +70,12 @@ def main(url):
     decline_cookies(chrome_driver)
     time.sleep(1)
     buttons = find_buttons(chrome_driver)
+    time.sleep(1)
 
     def process_button(button):
         return button_click(chrome_driver, button)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(buttons)) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         executor.map(process_button, buttons)
 
     hrefs = []

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 # Here we provide URL to the very first main page.
 
-def pages_urls (url):
+def pages_urls(url):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'lxml')
 
@@ -22,7 +22,6 @@ def pages_urls (url):
         except:
             pass
 
-
     # get a list of all URLs from every main page
     def pages_urls(url):
         all_pages = []
@@ -32,7 +31,7 @@ def pages_urls (url):
                     url_parts = url.split('&')
                     url_parts[2] = f'page={i}'
                 else:
-                    url = url+'&search_id=gxrsmwbnl8&source=listpage_pagination'
+                    url = url + '&search_id=gxrsmwbnl8&source=listpage_pagination'
                     url_parts = url.split('&')
                     url_parts[2] = f'page={i}'
                 url = '&'.join(url_parts)
@@ -42,6 +41,7 @@ def pages_urls (url):
             pass
 
     return pages_urls(url)
+
 
 if __name__ == '__main__':
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
