@@ -28,7 +28,7 @@ def multithread(pages):
     def fetch_page(href):
         return main_pages.pages_urls(href)
     # Use ProcessPoolExecutor to parallelize fetching data for multiple pages
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
         all_dealer_pages = list(executor.map(fetch_page, pages))
     return all_dealer_pages
 

@@ -4,12 +4,13 @@ This module collects all URLs of the main pages from the website autoscout24.com
 
 import requests
 from bs4 import BeautifulSoup
+from random_ua import main as user_agent
 
 
 # Here we provide URL to the very first main page.
 
 def pages_urls(url):
-    html = requests.get(url).text
+    html = requests.get(url, headers=user_agent()).text
     soup = BeautifulSoup(html, 'lxml')
 
     # get the number of total pages on the website
