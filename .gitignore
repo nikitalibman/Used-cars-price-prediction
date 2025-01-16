@@ -1,5 +1,0 @@
-.ipynb_checkpoints/**
-.idea/**
-.__pycache__/**
-cars_db.sql
-cars_04_10.11.csv

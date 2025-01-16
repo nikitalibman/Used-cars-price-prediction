@@ -1,9 +1,0 @@
-{
-    "postgres": {
-        "user": "postgres",
-        "pwd": "austria011020",
-        "host": "localhost",
-        "port": 5432,
-        "db": "autoscout"
-    }
-}
