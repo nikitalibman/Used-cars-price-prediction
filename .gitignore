@@ -3,3 +3,4 @@
 .__pycache__/**
 cars_db.sql
 cars_04_10.11.csv
+postgres_configs.json
