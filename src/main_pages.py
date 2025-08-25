@@ -26,7 +26,7 @@ def pages_urls(url, soup):
             url_part = url.split('?')
             page_url = url_part[0] + f'?atype=C&desc=0&page={i}&search_id=m76u8v3lpc&sort=standard&source=listpage_pagination&ustate=N%2CU'
             all_pages.append(page_url)
-        print(all_pages)
+        return all_pages
     except:
         print('No pages were found.')
 
@@ -35,9 +35,9 @@ def main(autoscout_url):
     url = get_home_url(autoscout_url)
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'lxml')
-    pages_urls(url, soup)
+    return pages_urls(url, soup)
 
 
 if __name__ == '__main__':
     autoscout_url = 'https://www.autoscout24.com/'
-    main(autoscout_url)
+    print(main(autoscout_url))
