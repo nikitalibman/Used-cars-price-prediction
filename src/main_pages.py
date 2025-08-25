@@ -4,6 +4,7 @@ This module collects all URLs of the main pages from the website autoscout24.com
 
 import requests
 from bs4 import BeautifulSoup
+from home_page import get_home_url
 # from random_ua import main as user_agent
 
 
@@ -29,13 +30,14 @@ def pages_urls(url, soup):
     except:
         print('No pages were found.')
 
-def main(url):
+def main(autoscout_url):
     # Here we provide URL to the very first main page.
+    url = get_home_url(autoscout_url)
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'lxml')
     pages_urls(url, soup)
 
 
 if __name__ == '__main__':
-    url = 'https://www.autoscout24.com/lst?sort=standard&desc=0&ustate=N%2CU&atype=C&cy=D%2CA%2CI%2CB%2CNL%2CE%2CL%2CF&cat=&source=homepage_search-mask'
-    main(url)
+    autoscout_url = 'https://www.autoscout24.com/'
+    main(autoscout_url)
