@@ -8,7 +8,7 @@ import json
 from datetime import datetime
 import dataframe
 import parsing
-import marks
+import src.makes as makes
 import main_pages
 
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
     all_pages = main_pages.pages_urls(url)
     cars, characteristics, prices, locations = parsing.cars_info(all_pages)
-    marks_menu = marks.all_marks(url)
+    marks_menu = makes.all_marks(url)
     df = dataframe.df_construct(marks_menu, cars, characteristics, prices, locations)
     param = 'append'
     connect(df, param)

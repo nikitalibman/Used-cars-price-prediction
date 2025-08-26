@@ -46,7 +46,7 @@ def create_car_dataframes(soups_list):
     characteristics = parce_car_info(
         soups_list, 'div', 'VehicleDetailTable_container__XhfV1', characteristics)
     prices = parce_car_info(
-        soups_list, 'prices', 'Price_price__APlgs PriceAndSeals_current_price__ykUpx', prices)
+        soups_list, 'p', 'Price_price__APlgs PriceAndSeals_current_price__ykUpx', prices)
     locations = parce_car_info(
         soups_list, 'span', 'SellerInfo_address__leRMu', locations)
     return cars, characteristics, prices, locations
@@ -85,8 +85,7 @@ def format_cars_info(characteristics, prices, locations):
 def main(url):
     all_pages = mp.main(url)
     soups_list = get_main_htmls(all_pages)
-    cars, characteristics, prices, locations = create_car_dataframes(
-        soups_list)
+    cars, characteristics, prices, locations = create_car_dataframes(soups_list)
     format_cars_info(characteristics, prices, locations)
     return cars, characteristics, prices, locations
 

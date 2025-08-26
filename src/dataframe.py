@@ -4,57 +4,59 @@ This module creates a pandas dataframe from all the acquired information about t
 
 
 import pandas as pd
-import marks
+import makes
 import parsing
-import main_pages
 
-def df_construct (marks_menu, cars, characteristics, prices, locations):
-    # here we create a blank list where we store all marks names which contain space, for example 'Aston Martin'
+def change_space_to_dash(makes_list):
+    """Create a blank list where we store all makes' names which contain space, for example 'Aston Martin'"""
     space_names = []
-    for mark in marks_menu:
-        if ' ' in mark:
-            space_names.append(mark)
+    for make in makes_list:
+        if ' ' in make:
+            space_names.append(make)
 
-    # Here we create a dictionary where to each mark with a space in the name is assigned the same mark name but with a dash
+    # Here we create a dictionary where to each make with a space in the name is assigned the same make name but with a dash
     mapping_dict = {}
-    for mark_with_space in space_names:
-        mark_with_dash = mark_with_space.replace(" ", "-")
-        mapping_dict[mark_with_space] = mark_with_dash
+    for make_with_space in space_names:
+        make_with_dash = make_with_space.replace(" ", "-")
+        mapping_dict[make_with_space] = make_with_dash
+    
+    return mapping_dict
 
-    # This function performs replacement of cars' marks with spaces into dashes '-'
-    def replace_mark_name(name):
-        for mark_with_space, mark_with_dash in mapping_dict.items():
-            if mark_with_space in name:
-                name = name.replace(mark_with_space, mark_with_dash)
-        return name
 
+def replace_make_name(mapping_dict, cars):
+    """This function performs replacement of cars' makes with spaces into dashes '-'."""
+    for make_with_space, make_with_dash in mapping_dict.items():
+        if make_with_space in cars:
+            cars = cars.replace(make_with_space, make_with_dash)
+    return cars
+
+
+def to_pandas(cars, characteristics, prices, locations):
+    """This function collects all previously formed lists and form 1 united dataframe in pandas."""
+    # Here we transform our lists into pandas Series
+    cars = pd.DataFrame(cars, columns=['make', 'model'])
+    characteristics = pd.Series(characteristics)
+    prices = pd.Series(prices, name='price')
+    locations = pd.Series(locations, name='location')
+    # Create a DataFrame from the Series, which splits the lists into columns
+    df = pd.DataFrame(characteristics.tolist(), columns=['mileage', 'transmission', 'registration', 'fuel', 'power'])
+    merged_df = pd.concat([cars, df], axis=1)
+    merged_df2 = pd.concat([merged_df, locations], axis=1)
+    main_pages_info = pd.concat([merged_df2, prices], axis=1)
+    return main_pages_info
+
+def main(url):
+    makes_list = makes.all_makes(url)
+    mapping_dict = change_space_to_dash(makes_list)
+    cars, characteristics, prices, locations = parsing.main(url)
     # Apply replacements to cars list
-    cars = [replace_mark_name(item) for item in cars]
-
-    # here we devide each string element of a list into 2 parts: car's mark and car's model
+    cars = [replace_make_name(mapping_dict, car) for car in cars]
+    # here we devide each string element of a list into 2 parts: car's make and car's model
     for car in range(len(cars)):
         cars[car] = cars[car].split(' ', 1)
-
-    # This function collects all previously formed lists and form 1 united dataframe in pandas
-    def to_pandas():
-        # Here we transform our lists into pandas Series
-        c = pd.DataFrame(cars, columns=['mark', 'model'])
-        ch = pd.Series(characteristics)
-        p = pd.Series(prices, name='price')
-        l = pd.Series(locations, name='location')
-        # Create a DataFrame from the Series, which splits the lists into columns
-        df = pd.DataFrame(ch.tolist(), columns=['mileage', 'transmission', 'registration', 'fuel', 'power'])
-        merged_df = pd.concat([c, df], axis=1)
-        merged_df2 = pd.concat([merged_df, l], axis=1)
-        main_pages_info = pd.concat([merged_df2, p], axis=1)
-        return main_pages_info
-
-    return to_pandas()
-
+    return to_pandas(cars, characteristics, prices, locations)
+    
 
 if __name__ == '__main__':
-    url = 'https://www.autoscout24.com/lst?atype=C&desc=0&sort=standard&source=homepage_search-mask&ustate=N%2CU'
-    all_pages = main_pages.pages_urls(url)
-    cars, characteristics, prices, locations = parsing.cars_info(all_pages)
-    marks_menu = marks.all_marks(url)
-    df_construct(marks_menu, cars, characteristics, prices, locations)
+    url = 'https://www.autoscout24.com/'
+    print(main(url))
