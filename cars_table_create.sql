@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS autoscout.cars (
-	mark VARCHAR(100),
+CREATE TABLE IF NOT EXISTS autoscout.<table_name> (
+	make VARCHAR(100),
 	model VARCHAR(100),
 	mileage INT,
 	transmission VARCHAR(50),
