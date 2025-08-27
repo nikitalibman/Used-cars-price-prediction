@@ -10,7 +10,7 @@ import dataframe
 import pandas as pd
 
 
-def connect(df, param='append'):
+def load_to_postgres(df, param='append'):
     """Load database configuration from a JSON file in order to avoid hard-coding sensible information."""
     with open('postgres_configs.json') as config_file:
         config = json.load(config_file)
@@ -58,5 +58,5 @@ def connect(df, param='append'):
 if __name__ == '__main__':
     url = 'https://www.autoscout24.com/'
     df = dataframe.main(url)
-    param = 'replace'
-    connect(df, param)
+    # param = 'replace'
+    load_to_postgres(df)
