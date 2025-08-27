@@ -32,7 +32,7 @@ def pages_urls(url, soup):
 
 def main(autoscout_url):
     # Here we provide URL to the very first main page.
-    url = get_home_url(autoscout_url)
+    url,_ = get_home_url(autoscout_url)
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'lxml')
     return pages_urls(url, soup)

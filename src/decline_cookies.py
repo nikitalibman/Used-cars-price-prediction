@@ -1,5 +1,5 @@
 """
-This module scraps all marks names and save it into a list.
+This module declines cookies when enter the autoscout website.
 """
 import time
 
