@@ -8,8 +8,8 @@ from home_page import get_home_url
 # from random_ua import main as user_agent
 
 
-# get the number of total pages on the website
 def total_pages(soup):
+    """Get the number of total pages on the website."""
     try:
         indicator = soup.find('li', class_='pagination-item--disabled pagination-item--page-indicator')
         pages = int(indicator.text.split('/')[-1].strip())
@@ -18,8 +18,8 @@ def total_pages(soup):
         print('Page indicator not found.')
 
 
-# get a list of all URLs from every main page
 def pages_urls(url, soup):
+    """Get a list of all URLs from every main page."""
     all_pages = []
     try:
         for i in range(1, total_pages(soup) + 1):
