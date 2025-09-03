@@ -5,9 +5,11 @@ from decline_cookies import get_url
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import csv
 
 
-    #chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
+#chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
+csv_path = "src/makes_list.csv"
 
 def all_makes(url):
     chrome_driver, _ = get_url(url)
@@ -36,6 +38,15 @@ def all_makes(url):
     return makes_list
 
 
+def save_makes_to_file(url):
+    with open(csv_path, "w", newline="") as f:
+        writer = csv.writer(f)
+        for make in all_makes(url):
+            writer.writerow([make])
+
+
 if __name__ == "__main__":
     url = 'https://www.autoscout24.com/'
-    all_makes(url)
+    csv_path = "src/makes_list.csv"
+    makes = save_makes_to_file(url)
+    print(f"Saved makes to '{csv_path}'")

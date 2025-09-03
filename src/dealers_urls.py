@@ -15,9 +15,11 @@ import requests
 from main_pages import total_pages
 from bs4 import BeautifulSoup
 from home_page import get_home_url
+from db_upload import load_to_postgres
+import dataframe
 
 
-def get_dealers_urls(url):
+def get_main_dealers_urls(url):
     _, driver = get_home_url(url)
     WebDriverWait(driver, 15).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'a.scr-link.SellerInfo_link__uUN4f'))
@@ -50,13 +52,34 @@ def get_dealers_urls(url):
 
     # Create dictionary mapping dealer URL to number of pages
     dealer_pages_dict = dict(zip(dealer_urls, pages))
+
+    return dealer_pages_dict, driver
+
+def get_suburls(url):
+    dealer_pages_dict, driver = get_main_dealers_urls(url)
+    all_urls = []
+    for dealer in dealer_pages_dict.items():
+        url_before_page_number = list(dealer)[0].split('page=')[0]
+        after = list(dealer)[0].split('page=')[1].split('&')[1]
+        for page in range(1, list(dealer)[1]+1):
+            whole = f'{url_before_page_number}page={page}&{after}'
+            all_urls.append(whole)
+
+    return all_urls, driver
+
+
+def get_all_dealers_cars(url):
+    all_urls, driver = get_suburls(url)
+    for dealer_url in all_urls:
+        df = dataframe.main(dealer_url)
+        load_to_postgres(df, param='append')
+        print('----------------')
     driver.quit()
-    return dealer_pages_dict
 
 
 if __name__ == '__main__':
     start = datetime.now()
     url = 'https://www.autoscout24.com/'
-    print(get_dealers_urls(url))
+    get_all_dealers_cars(url)
     end = datetime.now()
     print('Total time :', end - start)

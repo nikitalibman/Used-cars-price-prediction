@@ -30,13 +30,13 @@ def load_to_postgres(df, param='append'):
     # Set proper data types
     df['make'] = df['make'].astype(str)
     df['model'] = df['model'].astype(str)
-    df['mileage'] = df['mileage'].astype(int)
+    df['mileage'] = pd.to_numeric(df['mileage'], errors='coerce').astype('Int64')
     df['transmission'] = df['transmission'].astype(str)
     df['registration'] = pd.to_datetime('01/' + df['registration'], format='%d/%m/%Y', errors='coerce').dt.date
     df['fuel'] = df['fuel'].astype(str)
-    df['power'] = df['power'].astype(int)
+    df['power'] = pd.to_numeric(df['power'], errors='coerce').astype('Int64')
     df['location'] = df['location'].astype(str)
-    df['price'] = df['price'].astype(int)
+    df['price'] = pd.to_numeric(df['price'], errors='coerce').astype('Int64')
 
     # SQLAlchemy dtype mapping
     dtype = {

@@ -46,7 +46,9 @@ def to_pandas(cars, characteristics, prices, locations):
     return main_pages_info
 
 def main(url):
-    makes_list = makes.all_makes(url)
+    # Read makes from CSV file
+    with open("src/makes_list.csv", "r") as f:
+        makes_list = [line.strip() for line in f if line.strip()]
     mapping_dict = change_space_to_dash(makes_list)
     cars, characteristics, prices, locations = parsing.main(url)
     # Apply replacements to cars list
