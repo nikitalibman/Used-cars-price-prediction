@@ -4,25 +4,21 @@ found it is clicked and a page opens in a new tab. Then a URL of the current pag
 The output of the script is a list of all acquired dealers links from the current main page.
 Execution time is 1 minute and 6 seconds.
 """
-
+import time
+import requests
 from datetime import datetime
 from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
-import requests
-from main_pages import total_pages
 from bs4 import BeautifulSoup
-from home_page import get_home_url
-from db_upload import load_to_postgres
-import dataframe
+from main_page_parsing_flow import total_pages, get_home_url, load_to_postgres
 
 
-def get_main_dealers_urls(url):
+def get_main_dealers_urls(autoscout_url: str):
     """Collect all dealers' main URLs and total number of pages into a dictionary."""
 
-    _, driver = get_home_url(url)
+    _, driver = get_home_url(autoscout_url)
     WebDriverWait(driver, 15).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'a.scr-link.SellerInfo_link__uUN4f'))
     )
@@ -35,7 +31,7 @@ def get_main_dealers_urls(url):
         # Scroll to the button to ensure it's visible
         driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", button)
         time.sleep(0.5)   # Give time for scroll animation
-        # Open link in new tab (COMMAND for Mac)
+        # Open link in a new tab (COMMAND for Mac)
         ActionChains(driver).key_down(Keys.COMMAND).click(button).key_up(Keys.COMMAND).perform()
         WebDriverWait(driver, 10).until(lambda d: len(d.window_handles) > 1)
         driver.switch_to.window(driver.window_handles[-1])
@@ -57,10 +53,11 @@ def get_main_dealers_urls(url):
 
     return dealer_pages_dict, driver
 
-def get_suburls(url):
+
+def get_suburls(autoscout_url):
     """Construct every dealer's sub URL with a certain page number."""
 
-    dealer_pages_dict, driver = get_main_dealers_urls(url)
+    dealer_pages_dict, driver = get_main_dealers_urls(autoscout_url)
     all_urls = []
     for dealer in dealer_pages_dict.items():
         cid =  list(dealer)[0].split('cid=')[1].split('&')[0]
@@ -74,22 +71,21 @@ def get_suburls(url):
     return all_urls, driver
 
 
-def get_all_dealers_cars(url):
-    all_urls, driver = get_suburls(url)
+def get_all_dealers_cars(autoscout_url):
+    all_urls, _ = get_suburls(autoscout_url)
     for dealer_url in all_urls:
         cid = dealer_url.split('cid=')[1].split('&')[0]
         page = dealer_url.split('page=')[1].split('&')[0]
         print(f'Parsing page number \033[1m{page}\033[0m of the dealer \033[1m{cid}\033[0m to extract data to database.')
-        df = dataframe.main(dealer_url)
-        load_to_postgres(df, param='append')
+        load_to_postgres(autoscout_url ,param='append')
         print('----------------')
-    driver.quit()
+    # driver.quit()
 
 
 if __name__ == '__main__':
     print('Script execution is started.')
     start = datetime.now()
-    url = 'https://www.autoscout24.com/'
-    get_all_dealers_cars(url)
+    autoscout_url = 'https://www.autoscout24.com/'
+    get_all_dealers_cars(autoscout_url)
     end = datetime.now()
     print('Total time :', end - start)
