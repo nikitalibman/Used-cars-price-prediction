@@ -20,6 +20,8 @@ import dataframe
 
 
 def get_main_dealers_urls(url):
+    """Collect all dealers' main URLs and total number of pages into a dictionary."""
+
     _, driver = get_home_url(url)
     WebDriverWait(driver, 15).until(
         EC.presence_of_element_located((By.CSS_SELECTOR, 'a.scr-link.SellerInfo_link__uUN4f'))
@@ -56,9 +58,13 @@ def get_main_dealers_urls(url):
     return dealer_pages_dict, driver
 
 def get_suburls(url):
+    """Construct every dealer's sub URL with a certain page number."""
+
     dealer_pages_dict, driver = get_main_dealers_urls(url)
     all_urls = []
     for dealer in dealer_pages_dict.items():
+        cid =  list(dealer)[0].split('cid=')[1].split('&')[0]
+        print(f'Dealer \033[1m{cid}\033[0m is being processed to construct all his URLs.')
         url_before_page_number = list(dealer)[0].split('page=')[0]
         after = list(dealer)[0].split('page=')[1].split('&')[1]
         for page in range(1, list(dealer)[1]+1):
@@ -71,6 +77,9 @@ def get_suburls(url):
 def get_all_dealers_cars(url):
     all_urls, driver = get_suburls(url)
     for dealer_url in all_urls:
+        cid = dealer_url.split('cid=')[1].split('&')[0]
+        page = dealer_url.split('page=')[1].split('&')[0]
+        print(f'Parsing page number \033[1m{page}\033[0m of the dealer \033[1m{cid}\033[0m to extract data to database.')
         df = dataframe.main(dealer_url)
         load_to_postgres(df, param='append')
         print('----------------')
@@ -78,6 +87,7 @@ def get_all_dealers_cars(url):
 
 
 if __name__ == '__main__':
+    print('Script execution is started.')
     start = datetime.now()
     url = 'https://www.autoscout24.com/'
     get_all_dealers_cars(url)
