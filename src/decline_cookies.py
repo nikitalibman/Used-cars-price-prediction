@@ -47,5 +47,6 @@ def get_url(url):
 if __name__ == "__main__":
     url = 'https://www.autoscout24.com/'
     driver, url_result = get_url(url)
+    driver.quit()
     print(url_result)
     print(driver)
