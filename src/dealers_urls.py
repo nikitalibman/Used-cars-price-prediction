@@ -61,7 +61,7 @@ def get_suburls(autoscout_url):
     all_urls = []
     for dealer in dealer_pages_dict.items():
         cid =  list(dealer)[0].split('cid=')[1].split('&')[0]
-        print(f'Dealer \033[1m{cid}\033[0m is being processed to construct all his URLs.')
+        # print(f'Dealer \033[1m{cid}\033[0m is being processed to construct all his URLs.')
         url_before_page_number = list(dealer)[0].split('page=')[0]
         after = list(dealer)[0].split('page=')[1].split('&')[1]
         for page in range(1, list(dealer)[1]+1):

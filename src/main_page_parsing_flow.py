@@ -253,5 +253,9 @@ def load_to_postgres(autoscout_url: str, param='append') -> None:
 
 
 if __name__ == '__main__':
+    print('Script execution is started.')
+    start = datetime.now()
     autoscout_url = 'https://www.autoscout24.com/'
     load_to_postgres(autoscout_url)
+    end = datetime.now()
+    print('Total time :', end - start)
