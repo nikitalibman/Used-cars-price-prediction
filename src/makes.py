@@ -1,11 +1,11 @@
 """
 This module scraps all marks names and save it into a list.
 """
-from decline_cookies import get_url
+import csv
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import csv
+from decline_cookies import get_url
 
 
 #chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
