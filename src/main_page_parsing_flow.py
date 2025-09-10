@@ -202,7 +202,7 @@ def get_clean_dataframe(autoscout_url: str) -> to_pandas:
 
 
 def load_to_postgres(autoscout_url: str, param='append') -> None:
-    """Load database configuration from a JSON file in order to avoid hard-coding sensible information."""
+    """Upload generated pandas dataframe with cars' info into Postgres database."""
 
     with open('postgres_configs.json') as config_file:
         config = json.load(config_file)
@@ -249,7 +249,7 @@ def load_to_postgres(autoscout_url: str, param='append') -> None:
     # Upload dataframe to a corresponding table with a current date
     df.to_sql(table_name, engine, schema='autoscout',
               if_exists=param, index=False, dtype=dtype)
-    print(f'Table {table_name} was updated.')
+    print(f'Table \033[1m{table_name}\033[0m was updated with \033[1m{len(df)}\033[0m extra rows.')
 
 
 if __name__ == '__main__':
