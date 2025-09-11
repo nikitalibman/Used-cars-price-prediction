@@ -1,18 +1,18 @@
 [project]
-name = "autoscout-scraping"
+name = "autoscout_scraping"
 version = "0.1.0"
 description = ""
 authors = [
     {name = "nikita_libman",email = "libmannikita@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12,<3.13"
 dependencies = [
+    "apache-airflow (>=3.0.6,<4.0.0)",
+    "requests (>=2.32.5,<3.0.0)",
     "selenium (>=4.35.0,<5.0.0)",
     "bs4 (>=0.0.2,<0.0.3)",
-    "requests (>=2.32.5,<3.0.0)",
-    "pandas (>=2.3.2,<3.0.0)",
-    "sqlalchemy (>=2.0.43,<3.0.0)"
+    "pandas (>=2.3.2,<3.0.0)"
 ]
 
 
