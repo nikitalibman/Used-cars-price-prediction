@@ -10,8 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def decline_cookies(chrome_driver):
-    # Wait for the cookies consent popup to appear
+def decline_cookies(chrome_driver: webdriver.Chrome) -> None:
+    """Wait for the cookies consent popup window to appear and then decline cookies."""
+
     privacy_settings = chrome_driver.find_element(By.CLASS_NAME, "_consent-settings_1lphq_103")
     if privacy_settings.is_displayed():
         # Click the "Privacy Settings" button
@@ -22,7 +23,9 @@ def decline_cookies(chrome_driver):
         time.sleep(2)
 
 
-def get_url(url):
+def get_url(url: str) -> tuple[webdriver.Chrome, str]:
+    """Get URL of the current page."""
+    
     chrome_options = Options()
     chrome_options.add_argument('--incognito')  # Run Chrome in incognito mode
     chrome_options.add_argument('--headless')  # Run Chrome without opening the browser')

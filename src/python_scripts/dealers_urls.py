@@ -16,7 +16,8 @@ from main_page_parsing_flow import total_pages, get_home_url, load_to_postgres
 
 
 def get_main_dealers_urls(autoscout_url: str) -> dict:
-    """Collect all dealers' main URLs and total number of pages into a dictionary."""
+    """Collect all dealers' main URLs and total number of pages into a dictionary.
+    Currently parses dealers only from the first main page out of 200 others."""
 
     _, driver = get_home_url(autoscout_url)
     WebDriverWait(driver, 15).until(
@@ -58,7 +59,7 @@ def get_main_dealers_urls(autoscout_url: str) -> dict:
     return dealer_pages_dict
 
 
-def get_suburls(autoscout_url: str) -> tuple[list, list]:
+def get_suburls(autoscout_url: str) -> tuple[list, dict]:
     """Construct every dealer's sub URL with a certain page number."""
 
     dealer_pages_dict = get_main_dealers_urls(autoscout_url)
@@ -75,15 +76,19 @@ def get_suburls(autoscout_url: str) -> tuple[list, list]:
             whole = f'{url_before_page_number}page={page}&{after}'
             all_urls.append(whole)
 
-    return all_urls, all_pages
+    return all_urls, dealer_pages_dict
 
 
-def get_all_dealers_cars(autoscout_url: str) -> load_to_postgres:
+def get_all_dealers_cars(autoscout_url: str) -> None:
     """Form a dataframe of every dealer and upload it to Postgres database."""
-    all_urls, all_pages = get_suburls(autoscout_url)
+    
+    all_urls, dealer_pages_dict = get_suburls(autoscout_url)
     for dealer_url in all_urls:
         cid = dealer_url.split('cid=')[1].split('&')[0]
         page = dealer_url.split('page=')[1].split('&')[0]
+        search_id = dealer_url.split('search_id=')[1].split('&')[0]
+        construct = f'https://www.autoscout24.com/lst?atype=C&cid={cid}&page=1&search_id={search_id}&source=listpage_pagination'
+        all_pages = dealer_pages_dict.get(construct)
         print(
             f'Parsing page number \033[1m{page}\033[0m out of \033[1m{all_pages}\033[0m from the dealer \033[1m{cid}\033[0m.')
         print('Loading data to the database')

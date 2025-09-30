@@ -1,5 +1,5 @@
 """
-This module scraps all marks names and save it into a list.
+This module scraps all makes names and save it into a csv file.
 """
 import csv
 from selenium.webdriver.common.by import By
@@ -8,22 +8,27 @@ from selenium.webdriver.support import expected_conditions as EC
 from decline_cookies import get_url
 
 
-#chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
+# chrome_driver.get_screenshot_as_file('screenshot.png')  # Take a screenshot
 csv_path = "src/makes_list.csv"
 
-def all_makes(url):
+
+def all_makes(url: str) -> list:
+    """Find a drop-down menu with makes' names, parse it and save to a list."""
+    
     chrome_driver, _ = get_url(url)
     # Wait for the select-make-container to be present
     make_container = WebDriverWait(chrome_driver, 10).until(
         EC.presence_of_element_located((By.CLASS_NAME, "hf-tabs__content"))
     )
     # Find the button with all the makes inside the container and click it
-    makes_button = make_container.find_element(By.CLASS_NAME, "hf-searchmask-form__filter__make")
+    makes_button = make_container.find_element(
+        By.CLASS_NAME, "hf-searchmask-form__filter__make")
     # chrome_driver.execute_script("arguments[0].scrollIntoView(true);", makes_button)
     makes_button.click()
 
     wait = WebDriverWait(chrome_driver, 10)
-    makes_button = wait.until(EC.presence_of_all_elements_located((By.ID, 'make')))
+    makes_button = wait.until(
+        EC.presence_of_all_elements_located((By.ID, 'make')))
 
     makes_list = []
 
@@ -38,7 +43,9 @@ def all_makes(url):
     return makes_list
 
 
-def save_makes_to_file(url):
+def save_makes_to_file(url: str) -> None:
+    """Save list of makes into a csv file."""
+
     with open(csv_path, "w", newline="") as f:
         writer = csv.writer(f)
         for make in all_makes(url):

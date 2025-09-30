@@ -4,6 +4,7 @@ from datetime import datetime
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
+from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -11,7 +12,7 @@ from sqlalchemy import create_engine, VARCHAR, Integer, Date
 from decline_cookies import get_url
 
 
-def get_home_url(url: str) -> str:
+def get_home_url(url: str) -> tuple[str, webdriver.Chrome]:
     """Load the home autoscout page and click on the button 'Results'."""
 
     chrome_driver, current_url = get_url(url)
@@ -135,6 +136,8 @@ def format_cars_info(characteristics: list, prices: list, locations: list) -> tu
 
 
 def get_cars_info_lists(autoscout_url: str) -> tuple[list, list, list]:
+    """Get lists of cars' info."""
+
     soups_list = get_main_htmls(autoscout_url)
     cars, characteristics, prices, locations = create_car_dataframes(
         soups_list)
@@ -159,7 +162,7 @@ def change_space_to_dash(makes_list: list) -> dict:
     return mapping_dict
 
 
-def replace_make_name(mapping_dict: dict, cars: str):
+def replace_make_name(mapping_dict: dict, cars: str) -> list:
     """This function performs replacement of cars' makes with spaces into dashes '-'."""
 
     for make_with_space, make_with_dash in mapping_dict.items():
@@ -185,9 +188,10 @@ def to_pandas(cars: list, characteristics: list, prices: list, locations: list) 
     return main_pages_info
 
 
-def get_clean_dataframe(autoscout_url: str) -> to_pandas:
+def get_clean_dataframe(autoscout_url: str) -> pd.DataFrame:
     """Get a clean pandas dataframe."""
-    # Read makes from CSV file
+
+    # Read makes names from the CSV file
     with open("src/makes_list.csv", "r") as f:
         makes_list = [line.strip() for line in f if line.strip()]
     mapping_dict = change_space_to_dash(makes_list)
